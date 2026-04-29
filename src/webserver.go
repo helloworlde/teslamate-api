@@ -1,4 +1,4 @@
-// TeslaMate 车辆数据 REST API（PostgreSQL + MQTT 状态）。OpenAPI 文档由 swag 生成，见 /swagger/index.html。
+// TeslaMate 车辆数据 REST API（PostgreSQL + MQTT 状态）。OpenAPI 由 swag 生成；浏览器访问 /swagger 或 /swagger/index.html 打开 Swagger UI。
 //
 // @title TeslaMate API
 // @version 1.0
@@ -100,8 +100,8 @@ func main() {
 
 	docs.SwaggerInfo.BasePath = "/"
 
-	// gin middleware to enable GZIP support
-	r.Use(gzip.Gzip(gzip.DefaultCompression))
+	// gzip：排除 /swagger，避免压缩 Swagger UI 静态资源导致页面空白或脚本异常
+	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedPaths([]string{"/swagger"})))
 
 	r.Use(func(c *gin.Context) {
 		c.Header(headerAPIVersion, apiVersion)
@@ -118,6 +118,9 @@ func main() {
 
 	r.GET("/", httpRoot)
 
+	// Gin 的 /swagger/*any 不会匹配仅「/swagger」或「/swagger/」，需显式重定向到 index.html
+	r.GET("/swagger", func(c *gin.Context) { c.Redirect(http.StatusFound, "/swagger/index.html") })
+	r.GET("/swagger/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/swagger/index.html") })
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// TeslaMateApi /api endpoints

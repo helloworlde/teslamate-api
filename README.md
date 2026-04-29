@@ -117,7 +117,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 ## API documentation
 
-交互式 OpenAPI（Swagger UI）在运行服务后访问：**`http://localhost:8080/swagger/index.html`**（若端口或主机不同请相应替换）。规范文件由 [swag](https://github.com/swaggo/swag) 根据源码注释生成，位于 `src/docs/swagger.json`。修改接口后请在仓库根目录执行：
+交互式 OpenAPI（Swagger UI）在运行服务后访问：**`http://localhost:8080/swagger`** 或 **`/swagger/index.html`**（若端口或主机不同请相应替换；仅打开根路径 `/` 只会看到 JSON 提示，不是文档页）。规范文件由 [swag](https://github.com/swaggo/swag) 根据源码注释生成，位于 `src/docs/swagger.json`。修改接口后请在仓库根目录执行：
 
 ```bash
 swag init -g webserver.go -d src -o src/docs --parseDependency --parseInternal
