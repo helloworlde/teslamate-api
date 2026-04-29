@@ -7,52 +7,20 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// TeslaMateAPIGlobalsettingsV1 TeslaMate 全局设置（单位、语言、URL 等）。
+// @Summary 全局设置
+// @Tags settings
+// @Produce json
+// @Success 200 {object} RespGlobalSettings
+// @Router /api/v1/globalsettings [get]
 // TeslaMateAPIGlobalsettingsV1 func
 func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	// define error messages
 	var CarsGlobalsettingsError1 = "Unable to load settings."
 
-	// creating structs for /globalsettings
-	// AccountInfo struct - child of GlobalSettings
-	type AccountInfo struct {
-		InsertedAt string `json:"inserted_at"` // string
-		UpdatedAt  string `json:"updated_at"`  // string
-	}
-	// TeslaMateUnits struct - child of GlobalSettings
-	type TeslaMateUnits struct {
-		UnitsLength      string `json:"unit_of_length"`      // string
-		UnitsTemperature string `json:"unit_of_temperature"` // string
-	}
-	// TeslaMateGUI struct - child of GlobalSettings
-	type TeslaMateGUI struct {
-		PreferredRange string `json:"preferred_range"` // string
-		Language       string `json:"language"`        // string
-	}
-	// TeslaMateURLs struct - child of GlobalSettings
-	type TeslaMateURLs struct {
-		BaseURL    string `json:"base_url"`    // string
-		GrafanaURL string `json:"grafana_url"` // string
-	}
-	// GlobalSettings struct - child of Data
-	type GlobalSettings struct {
-		SettingID      int            `json:"setting_id"`       // smallint
-		AccountInfo    AccountInfo    `json:"account_info"`     // struct
-		TeslaMateUnits TeslaMateUnits `json:"teslamate_units"`  // struct
-		TeslaMateGUI   TeslaMateGUI   `json:"teslamate_webgui"` // struct
-		TeslaMateURLs  TeslaMateURLs  `json:"teslamate_urls"`   // struct
-	}
-	// Data struct - child of JSONData
-	type Data struct {
-		GlobalSettings GlobalSettings `json:"settings"`
-	}
-	// JSONData struct - main
-	type JSONData struct {
-		Data Data `json:"data"`
-	}
-
 	// creating required vars
-	var globalSetting GlobalSettings
+	var globalSetting APIGlobalSettings
 
 	// getting data from database
 	query := `
@@ -101,8 +69,8 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	//
 	// build the data-blob
-	jsonData := JSONData{
-		Data{
+	jsonData := RespGlobalSettings{
+		Data: RespGlobalSettingsData{
 			GlobalSettings: globalSetting,
 		},
 	}

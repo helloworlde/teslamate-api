@@ -1,0 +1,2985 @@
+basePath: /
+definitions:
+  main.APIAccountTimestamps:
+    properties:
+      inserted_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  main.APIBatteryHealth:
+    properties:
+      battery_health_percentage:
+        type: number
+      current_capacity:
+        type: number
+      current_range:
+        type: number
+      max_capacity:
+        type: number
+      max_range:
+        type: number
+      rated_efficiency:
+        type: number
+    type: object
+  main.APICarRef:
+    properties:
+      car_id:
+        description: CarID TeslaMate cars.id
+        type: integer
+      car_name:
+        description: CarName 车辆昵称，可为空
+        type: string
+    type: object
+  main.APICarsListCar:
+    properties:
+      car_details:
+        allOf:
+        - $ref: '#/definitions/main.APICarsListCarDetails'
+        description: CarDetails 车型与效率等
+      car_exterior:
+        allOf:
+        - $ref: '#/definitions/main.APICarsListCarExterior'
+        description: CarExterior 外观
+      car_id:
+        description: CarID 车辆 ID
+        type: integer
+      car_settings:
+        allOf:
+        - $ref: '#/definitions/main.APICarsListCarSettings'
+        description: CarSettings 车辆设置
+      name:
+        description: Name 昵称
+        type: string
+      teslamate_details:
+        allOf:
+        - $ref: '#/definitions/main.APICarsListTMDetails'
+        description: TeslaMateDetails 写入/更新时间
+      teslamate_stats:
+        allOf:
+        - $ref: '#/definitions/main.APICarsListTMStats'
+        description: TeslaMateStats 充电/驾驶/更新次数统计
+    type: object
+  main.APICarsListCarDetails:
+    properties:
+      efficiency:
+        allOf:
+        - $ref: '#/definitions/main.NullFloat64'
+        description: Efficiency 效率系数
+      eid:
+        description: EID Tesla 车辆 entity id
+        type: integer
+      model:
+        description: Model 车型字符串
+        type: string
+      trim_badging:
+        description: TrimBadging 尾标
+        type: string
+      vid:
+        description: VID 车辆 id
+        type: integer
+      vin:
+        description: Vin 车架号
+        type: string
+    type: object
+  main.APICarsListCarExterior:
+    properties:
+      exterior_color:
+        description: ExteriorColor 颜色
+        type: string
+      spoiler_type:
+        description: SpoilerType 尾翼
+        type: string
+      wheel_type:
+        description: WheelType 轮毂
+        type: string
+    type: object
+  main.APICarsListCarSettings:
+    properties:
+      free_supercharging:
+        description: FreeSupercharging 免费超充
+        type: boolean
+      req_not_unlocked:
+        description: ReqNotUnlocked 要求未解锁
+        type: boolean
+      suspend_after_idle_min:
+        description: SuspendAfterIdleMin 空闲后挂起
+        type: integer
+      suspend_min:
+        description: SuspendMin 挂起分钟
+        type: integer
+      use_streaming_api:
+        description: UseStreamingAPI 流式 API
+        type: boolean
+    type: object
+  main.APICarsListTMDetails:
+    properties:
+      inserted_at:
+        description: InsertedAt 创建时间
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  main.APICarsListTMStats:
+    properties:
+      total_charges:
+        description: TotalCharges 充电次数
+        type: integer
+      total_drives:
+        description: TotalDrives 驾驶次数
+        type: integer
+      total_updates:
+        description: TotalUpdates 更新次数
+        type: integer
+    type: object
+  main.APIChargeChargerStats:
+    properties:
+      charger_actual_current:
+        type: integer
+      charger_phases:
+        type: integer
+      charger_pilot_current:
+        type: integer
+      charger_power:
+        type: integer
+      charger_voltage:
+        type: integer
+    type: object
+  main.APIChargeCurrent:
+    properties:
+      address:
+        type: string
+      battery_details:
+        $ref: '#/definitions/main.APIChargeCurrentBattery'
+      charge_details:
+        items:
+          $ref: '#/definitions/main.APIChargeDetailRow'
+        type: array
+      charge_energy_added:
+        type: number
+      charge_id:
+        type: integer
+      cost:
+        type: number
+      duration_min:
+        type: integer
+      duration_str:
+        type: string
+      is_charging:
+        type: boolean
+      odometer:
+        type: number
+      outside_temp_avg:
+        type: number
+      rated_range:
+        $ref: '#/definitions/main.APIChargeCurrentRatedRange'
+      start_date:
+        type: string
+    type: object
+  main.APIChargeCurrentBattery:
+    properties:
+      current_battery_level:
+        type: integer
+      start_battery_level:
+        type: integer
+    type: object
+  main.APIChargeCurrentRatedRange:
+    properties:
+      added_range:
+        type: number
+      current_range:
+        type: number
+      start_range:
+        type: number
+    type: object
+  main.APIChargeDetail:
+    properties:
+      address:
+        type: string
+      battery_details:
+        $ref: '#/definitions/main.APIChargesBatteryLevels'
+      charge_details:
+        items:
+          $ref: '#/definitions/main.APIChargeDetailRowFixed'
+        type: array
+      charge_energy_added:
+        type: number
+      charge_energy_used:
+        type: number
+      charge_id:
+        type: integer
+      cost:
+        type: number
+      duration_min:
+        type: integer
+      duration_str:
+        type: string
+      end_date:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      odometer:
+        type: number
+      outside_temp_avg:
+        type: number
+      range_ideal:
+        $ref: '#/definitions/main.APIChargesRangeSpan'
+      range_rated:
+        $ref: '#/definitions/main.APIChargesRangeSpan'
+      start_date:
+        type: string
+    type: object
+  main.APIChargeDetailBatteryIdealRated:
+    properties:
+      battery_heater:
+        type: boolean
+      battery_heater_no_power:
+        $ref: '#/definitions/main.NullBool'
+      battery_heater_on:
+        type: boolean
+      ideal_battery_range:
+        type: number
+      rated_battery_range:
+        type: number
+    type: object
+  main.APIChargeDetailBatteryInfo:
+    properties:
+      battery_heater:
+        type: boolean
+      battery_heater_no_power:
+        $ref: '#/definitions/main.NullBool'
+      battery_heater_on:
+        type: boolean
+      rated_battery_range:
+        type: number
+    type: object
+  main.APIChargeDetailFastCharger:
+    properties:
+      fast_charger_brand:
+        type: string
+      fast_charger_present:
+        type: boolean
+      fast_charger_type:
+        type: string
+    type: object
+  main.APIChargeDetailRow:
+    properties:
+      battery_info:
+        $ref: '#/definitions/main.APIChargeDetailBatteryInfo'
+      battery_level:
+        type: integer
+      charge_energy_added:
+        type: number
+      charger_details:
+        $ref: '#/definitions/main.APIChargeChargerStats'
+      conn_charge_cable: {}
+      date:
+        type: string
+      detail_id:
+        type: integer
+      fast_charger_info:
+        $ref: '#/definitions/main.APIChargeFastCharger'
+      not_enough_power_to_heat:
+        $ref: '#/definitions/main.NullBool'
+      outside_temp:
+        type: number
+      usable_battery_level:
+        type: integer
+    type: object
+  main.APIChargeDetailRowFixed:
+    properties:
+      battery_info:
+        $ref: '#/definitions/main.APIChargeDetailBatteryIdealRated'
+      battery_level:
+        type: integer
+      charge_energy_added:
+        type: number
+      charger_details:
+        $ref: '#/definitions/main.APIChargeChargerStats'
+      conn_charge_cable:
+        type: string
+      date:
+        type: string
+      detail_id:
+        type: integer
+      fast_charger_info:
+        $ref: '#/definitions/main.APIChargeDetailFastCharger'
+      not_enough_power_to_heat:
+        $ref: '#/definitions/main.NullBool'
+      outside_temp:
+        type: number
+      usable_battery_level:
+        type: integer
+    type: object
+  main.APIChargeFastCharger:
+    properties:
+      fast_charger_brand:
+        type: string
+      fast_charger_present:
+        type: boolean
+      fast_charger_type:
+        type: string
+    type: object
+  main.APIChargesBatteryLevels:
+    properties:
+      end_battery_level:
+        type: integer
+      start_battery_level:
+        type: integer
+    type: object
+  main.APIChargesRangeSpan:
+    properties:
+      end_range:
+        type: number
+      start_range:
+        type: number
+    type: object
+  main.APIChargesRow:
+    properties:
+      address:
+        type: string
+      battery_details:
+        $ref: '#/definitions/main.APIChargesBatteryLevels'
+      charge_energy_added:
+        type: number
+      charge_energy_used:
+        type: number
+      charge_id:
+        type: integer
+      cost:
+        type: number
+      duration_min:
+        type: integer
+      duration_str:
+        type: string
+      end_date:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      odometer:
+        type: number
+      outside_temp_avg:
+        type: number
+      range_ideal:
+        $ref: '#/definitions/main.APIChargesRangeSpan'
+      range_rated:
+        $ref: '#/definitions/main.APIChargesRangeSpan'
+      start_date:
+        type: string
+    type: object
+  main.APIDatabaseInfo:
+    properties:
+      postgres_version:
+        type: string
+      shared_buffers_setting:
+        type: string
+      table_row_counts:
+        items:
+          $ref: '#/definitions/main.APIDatabaseTableRows'
+        type: array
+      table_row_counts_error:
+        type: string
+      table_sizes:
+        items:
+          $ref: '#/definitions/main.APIDatabaseTableSize'
+        type: array
+      timezone:
+        type: string
+      user_tables_total_bytes:
+        type: integer
+    type: object
+  main.APIDatabaseTableRows:
+    properties:
+      rows:
+        type: integer
+      table:
+        type: string
+    type: object
+  main.APIDatabaseTableSize:
+    properties:
+      data_bytes:
+        type: integer
+      index_bytes:
+        type: integer
+      table:
+        type: string
+      total_bytes:
+        type: integer
+    type: object
+  main.APIDriveBatteryTrip:
+    properties:
+      end_battery_level:
+        type: integer
+      end_usable_battery_level:
+        type: integer
+      is_sufficiently_precise:
+        type: boolean
+      reduced_range:
+        type: boolean
+      start_battery_level:
+        type: integer
+      start_usable_battery_level:
+        type: integer
+    type: object
+  main.APIDriveDetail:
+    properties:
+      battery_details:
+        $ref: '#/definitions/main.APIDriveBatteryTrip'
+      consumption_net:
+        type: number
+      drive_details:
+        items:
+          $ref: '#/definitions/main.APIDriveDetailPoint'
+        type: array
+      drive_id:
+        type: integer
+      duration_min:
+        type: integer
+      duration_str:
+        type: string
+      end_address:
+        type: string
+      end_date:
+        type: string
+      energy_consumed_net:
+        type: number
+      inside_temp_avg:
+        type: number
+      odometer_details:
+        $ref: '#/definitions/main.APIOdometerTrip'
+      outside_temp_avg:
+        type: number
+      power_max:
+        type: integer
+      power_min:
+        type: integer
+      range_ideal:
+        $ref: '#/definitions/main.APIRangeTrip'
+      range_rated:
+        $ref: '#/definitions/main.APIRangeTrip'
+      speed_avg:
+        type: number
+      speed_max:
+        type: integer
+      start_address:
+        type: string
+      start_date:
+        type: string
+    type: object
+  main.APIDriveDetailBattery:
+    properties:
+      battery_heater:
+        $ref: '#/definitions/main.NullBool'
+      battery_heater_no_power:
+        $ref: '#/definitions/main.NullBool'
+      battery_heater_on:
+        $ref: '#/definitions/main.NullBool'
+      est_battery_range:
+        $ref: '#/definitions/main.NullFloat64'
+      ideal_battery_range:
+        $ref: '#/definitions/main.NullFloat64'
+      rated_battery_range:
+        $ref: '#/definitions/main.NullFloat64'
+    type: object
+  main.APIDriveDetailClimate:
+    properties:
+      driver_temp_setting:
+        $ref: '#/definitions/main.NullFloat64'
+      fan_status:
+        $ref: '#/definitions/main.NullInt64'
+      inside_temp:
+        $ref: '#/definitions/main.NullFloat64'
+      is_climate_on:
+        $ref: '#/definitions/main.NullBool'
+      is_front_defroster_on:
+        $ref: '#/definitions/main.NullBool'
+      is_rear_defroster_on:
+        $ref: '#/definitions/main.NullBool'
+      outside_temp:
+        $ref: '#/definitions/main.NullFloat64'
+      passenger_temp_setting:
+        $ref: '#/definitions/main.NullFloat64'
+    type: object
+  main.APIDriveDetailPoint:
+    properties:
+      battery_info:
+        $ref: '#/definitions/main.APIDriveDetailBattery'
+      battery_level:
+        type: integer
+      climate_info:
+        $ref: '#/definitions/main.APIDriveDetailClimate'
+      date:
+        type: string
+      detail_id:
+        type: integer
+      elevation:
+        $ref: '#/definitions/main.NullInt64'
+      latitude:
+        type: number
+      longitude:
+        type: number
+      odometer:
+        type: number
+      power:
+        type: integer
+      speed:
+        type: integer
+      usable_battery_level:
+        $ref: '#/definitions/main.NullInt64'
+    type: object
+  main.APIDriveListRow:
+    properties:
+      battery_details:
+        $ref: '#/definitions/main.APIDriveBatteryTrip'
+      consumption_net:
+        type: number
+      drive_id:
+        type: integer
+      duration_min:
+        type: integer
+      duration_str:
+        type: string
+      end_address:
+        type: string
+      end_date:
+        type: string
+      energy_consumed_net:
+        type: number
+      inside_temp_avg:
+        type: number
+      odometer_details:
+        $ref: '#/definitions/main.APIOdometerTrip'
+      outside_temp_avg:
+        type: number
+      power_max:
+        type: integer
+      power_min:
+        type: integer
+      range_ideal:
+        $ref: '#/definitions/main.APIRangeTrip'
+      range_rated:
+        $ref: '#/definitions/main.APIRangeTrip'
+      speed_avg:
+        type: number
+      speed_max:
+        type: integer
+      start_address:
+        type: string
+      start_date:
+        type: string
+    type: object
+  main.APIGlobalGUI:
+    properties:
+      language:
+        type: string
+      preferred_range:
+        type: string
+    type: object
+  main.APIGlobalSettings:
+    properties:
+      account_info:
+        $ref: '#/definitions/main.APIAccountTimestamps'
+      setting_id:
+        type: integer
+      teslamate_units:
+        $ref: '#/definitions/main.APIGlobalUnits'
+      teslamate_urls:
+        $ref: '#/definitions/main.APIGlobalURLs'
+      teslamate_webgui:
+        $ref: '#/definitions/main.APIGlobalGUI'
+    type: object
+  main.APIGlobalURLs:
+    properties:
+      base_url:
+        type: string
+      grafana_url:
+        type: string
+    type: object
+  main.APIGlobalUnits:
+    properties:
+      unit_of_length:
+        type: string
+      unit_of_temperature:
+        type: string
+    type: object
+  main.APIMetricsAddressLine:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      name:
+        type: string
+      neighbourhood:
+        type: string
+      state:
+        type: string
+    type: object
+  main.APIMetricsChargeDeltaPoint:
+    properties:
+      end_battery_level:
+        type: integer
+      end_date:
+        type: string
+      start_battery_level:
+        type: integer
+    type: object
+  main.APIMetricsChargeLevelData:
+    properties:
+      bucket_minutes:
+        type: integer
+      series:
+        items:
+          $ref: '#/definitions/main.APIMetricsChargeLevelPoint'
+        type: array
+      thresholds:
+        $ref: '#/definitions/main.APIMetricsChargeLevelThresholds'
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsChargeLevelPoint:
+    properties:
+      battery_level:
+        type: number
+      bucket_time:
+        type: string
+      usable_battery_level:
+        type: number
+    type: object
+  main.APIMetricsChargeLevelThresholds:
+    properties:
+      lower:
+        type: integer
+      upper:
+        type: integer
+    type: object
+  main.APIMetricsChargingGeo:
+    properties:
+      charges:
+        type: integer
+      chg_total:
+        type: number
+      latitude:
+        type: number
+      loc_nm:
+        type: string
+      longitude:
+        type: number
+      pct:
+        type: number
+    type: object
+  main.APIMetricsChargingStatsData:
+    properties:
+      charge_count:
+        type: integer
+      cost_per_100_length_currency:
+        type: number
+      cost_per_kwh:
+        type: number
+      cost_per_kwh_ac:
+        type: number
+      cost_per_kwh_dc:
+        type: number
+      min_duration_min:
+        type: integer
+      suc_charging_cost:
+        type: number
+      total_cost:
+        type: number
+      total_energy_added_kwh:
+        type: number
+      unit_of_length_setting:
+        type: string
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsChargingStatsExtraData:
+    properties:
+      charge_delta_series:
+        items:
+          $ref: '#/definitions/main.APIMetricsChargeDeltaPoint'
+        type: array
+      charging_geo_by_kwh:
+        items:
+          $ref: '#/definitions/main.APIMetricsChargingGeo'
+        type: array
+      min_duration_min:
+        type: integer
+      top_stations_by_cost:
+        items:
+          $ref: '#/definitions/main.APIMetricsStationCost'
+        type: array
+      top_stations_by_kwh:
+        items:
+          $ref: '#/definitions/main.APIMetricsStationEnergy'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsCityCount:
+    properties:
+      city:
+        type: string
+      count:
+        type: integer
+    type: object
+  main.APIMetricsDestCount:
+    properties:
+      name:
+        type: string
+      visited:
+        type: integer
+    type: object
+  main.APIMetricsDriveStatsData:
+    properties:
+      avg_distance_logged_per_day:
+        type: number
+      avg_energy_net_kwh_per_day:
+        type: number
+      drive_count:
+        type: integer
+      energy_consumed_kwh_net:
+        type: number
+      extrapolated_monthly_mileage:
+        type: number
+      extrapolated_yearly_mileage:
+        type: number
+      max_speed_converted:
+        type: number
+      median_distance_converted:
+        type: number
+      preferred_range:
+        type: string
+      total_distance_km_raw:
+        type: number
+      unit_of_length:
+        type: string
+      window_days:
+        type: number
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsDriveStatsExtraData:
+    properties:
+      speed_histogram:
+        items:
+          $ref: '#/definitions/main.APIMetricsSpeedBin'
+        type: array
+      top_destinations:
+        items:
+          $ref: '#/definitions/main.APIMetricsDestCount'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsDutchTaxData:
+    properties:
+      drives:
+        items:
+          $ref: '#/definitions/main.APIMetricsDutchTaxDrive'
+        type: array
+      unit_of_length:
+        type: string
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsDutchTaxDrive:
+    properties:
+      distance:
+        type: number
+      drive_id:
+        type: integer
+      duration_min:
+        type: integer
+      end_address:
+        type: string
+      end_date_ts:
+        type: number
+      end_odometer:
+        type: number
+      start_address:
+        type: string
+      start_date_ts:
+        type: number
+      start_odometer:
+        type: number
+    type: object
+  main.APIMetricsEfficiencyData:
+    properties:
+      consumption_net_wh_per_unit:
+        type: number
+      logged_distance_converted:
+        type: number
+      note:
+        type: string
+      preferred_range:
+        type: string
+      unit_of_length:
+        type: string
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsLocationsData:
+    properties:
+      address_count:
+        type: integer
+      address_filter:
+        type: string
+      addresses_sample:
+        items:
+          $ref: '#/definitions/main.APIMetricsAddressLine'
+        type: array
+      distinct_cities:
+        type: integer
+      distinct_countries:
+        type: integer
+      distinct_states:
+        type: integer
+      top_cities:
+        items:
+          $ref: '#/definitions/main.APIMetricsCityCount'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsMileageData:
+    properties:
+      series:
+        items:
+          $ref: '#/definitions/main.APIMetricsMileagePoint'
+        type: array
+      unit_of_length:
+        type: string
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsMileagePoint:
+    properties:
+      mileage:
+        type: number
+      time:
+        type: string
+    type: object
+  main.APIMetricsOverviewData:
+    properties:
+      battery_level_latest:
+        type: integer
+      consumption_net_wh_per_length:
+        type: number
+      firmware_version:
+        type: string
+      odometer_latest:
+        type: number
+      preferred_range:
+        type: string
+      total_distance_logged:
+        type: number
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsProjBattLevel:
+    properties:
+      battery_level:
+        type: number
+      time:
+        type: string
+      usable_battery_level:
+        type: number
+    type: object
+  main.APIMetricsProjMileageRow:
+    properties:
+      mileage:
+        type: number
+      time:
+        type: string
+    type: object
+  main.APIMetricsProjRangeRow:
+    properties:
+      projected_range_per_soc:
+        type: number
+      time:
+        type: string
+    type: object
+  main.APIMetricsProjTempRow:
+    properties:
+      outside_temp:
+        type: number
+      time:
+        type: string
+    type: object
+  main.APIMetricsProjectedRangeData:
+    properties:
+      battery_level:
+        items:
+          $ref: '#/definitions/main.APIMetricsProjBattLevel'
+        type: array
+      interval:
+        type: string
+      mileage:
+        items:
+          $ref: '#/definitions/main.APIMetricsProjMileageRow'
+        type: array
+      outdoor_temperature:
+        items:
+          $ref: '#/definitions/main.APIMetricsProjTempRow'
+        type: array
+      preferred_range:
+        type: string
+      projected_range_curve:
+        items:
+          $ref: '#/definitions/main.APIMetricsProjRangeRow'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsSpeedBin:
+    properties:
+      seconds_elapsed:
+        type: number
+      speed_bin:
+        type: number
+    type: object
+  main.APIMetricsStatesAnalyticsData:
+    properties:
+      parked_fraction:
+        type: number
+      state_legend:
+        type: string
+      state_timeline_numeric:
+        items:
+          $ref: '#/definitions/main.APIMetricsStatesNumericPoint'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsStatesNumericPoint:
+    properties:
+      state:
+        type: number
+      t_ms:
+        type: number
+    type: object
+  main.APIMetricsStationCost:
+    properties:
+      cost:
+        type: number
+      location:
+        type: string
+    type: object
+  main.APIMetricsStationEnergy:
+    properties:
+      charge_energy_added:
+        type: number
+      location:
+        type: string
+    type: object
+  main.APIMetricsStatisticsChargePeriodRow:
+    properties:
+      avg_energy_charged_kwh:
+        type: number
+      cnt_charges:
+        type: number
+      cost_charges:
+        type: number
+      date:
+        type: string
+      date_from:
+        type: number
+      date_to:
+        type: number
+      display:
+        type: string
+      sum_energy_added_kwh:
+        type: number
+      sum_energy_used_kwh:
+        type: number
+    type: object
+  main.APIMetricsStatisticsConsumptionGrossRow:
+    properties:
+      consumption_gross:
+        type: number
+      date:
+        type: string
+      date_from:
+        type: number
+      date_to:
+        type: number
+      display:
+        type: string
+      is_incomplete:
+        type: boolean
+    type: object
+  main.APIMetricsStatisticsConsumptionNetRow:
+    properties:
+      consumption_net:
+        type: number
+      date:
+        type: string
+      date_from:
+        type: number
+      date_to:
+        type: number
+      display:
+        type: string
+    type: object
+  main.APIMetricsStatisticsData:
+    properties:
+      charges_per_period:
+        items:
+          $ref: '#/definitions/main.APIMetricsStatisticsChargePeriodRow'
+        type: array
+      consumption_gross_period:
+        items:
+          $ref: '#/definitions/main.APIMetricsStatisticsConsumptionGrossRow'
+        type: array
+      consumption_net_period:
+        items:
+          $ref: '#/definitions/main.APIMetricsStatisticsConsumptionNetRow'
+        type: array
+      drives_per_period:
+        items:
+          $ref: '#/definitions/main.APIMetricsStatisticsDrivePeriodRow'
+        type: array
+      high_precision:
+        type: integer
+      period:
+        type: string
+      preferred_range:
+        type: string
+      timezone:
+        type: string
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsStatisticsDrivePeriodRow:
+    properties:
+      avg_outside_temp:
+        type: number
+      cnt:
+        type: integer
+      date:
+        type: string
+      date_from:
+        type: number
+      date_to:
+        type: number
+      display:
+        type: string
+      efficiency:
+        type: number
+      sum_distance:
+        type: number
+      sum_duration_h:
+        type: number
+    type: object
+  main.APIMetricsTimelineData:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/main.APIMetricsTimelineEvent'
+        type: array
+      note:
+        type: string
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsTimelineEvent:
+    properties:
+      end_date:
+        type: string
+      kind:
+        type: string
+      label:
+        type: string
+      ref_id:
+        type: string
+      start_date:
+        type: string
+    type: object
+  main.APIMetricsTripData:
+    properties:
+      avg_speed_by_length_unit:
+        type: number
+      charge_duration_hours:
+        type: number
+      consumption_net_wh_per_unit:
+        type: number
+      drive_duration_hours:
+        type: number
+      note:
+        type: string
+      parking_hours_est:
+        type: number
+      preferred_range:
+        type: string
+      total_charging_cost:
+        type: number
+      window_duration_hours:
+        type: number
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsVampireDrainData:
+    properties:
+      columns:
+        items:
+          type: string
+        type: array
+      duration_hours_min:
+        type: number
+      preferred_range:
+        type: string
+      rows:
+        items:
+          $ref: '#/definitions/main.APIMetricsVampireRow'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsVampireRow:
+    properties:
+      avg_power:
+        type: number
+      consumption:
+        type: number
+      duration:
+        type: number
+      end_date:
+        type: string
+      end_date_ts:
+        type: number
+      has_reduced_range:
+        type: integer
+      range_diff:
+        type: number
+      range_lost_per_hour:
+        type: number
+      soc_diff:
+        type: number
+      standby:
+        type: number
+      start_date:
+        type: string
+      start_date_ts:
+        type: number
+    type: object
+  main.APIMetricsVisitedData:
+    properties:
+      charging_efficiency_pct:
+        type: number
+      mileage_label:
+        type: string
+      total_charging_cost:
+        type: number
+      total_energy_added:
+        type: number
+      total_energy_used:
+        type: number
+      track_sample:
+        items:
+          $ref: '#/definitions/main.APIMetricsVisitedTrackPoint'
+        type: array
+      window_end_utc:
+        type: string
+      window_start_utc:
+        type: string
+    type: object
+  main.APIMetricsVisitedTrackPoint:
+    properties:
+      lat:
+        type: number
+      lon:
+        type: number
+      t_ms:
+        type: number
+    type: object
+  main.APIOdometerTrip:
+    properties:
+      odometer_distance:
+        type: number
+      odometer_end:
+        type: number
+      odometer_start:
+        type: number
+    type: object
+  main.APIPositionRow:
+    properties:
+      battery_level:
+        type: integer
+      date:
+        type: string
+      driver_temp_setting:
+        $ref: '#/definitions/main.NullFloat64'
+      id:
+        type: integer
+      ideal_battery_range_km:
+        type: number
+      inside_temp:
+        $ref: '#/definitions/main.NullFloat64'
+      latitude:
+        type: number
+      longitude:
+        type: number
+      odometer:
+        type: number
+      outside_temp:
+        $ref: '#/definitions/main.NullFloat64'
+      power:
+        type: integer
+      rated_battery_range_km:
+        type: number
+      speed:
+        type: integer
+      usable_battery_level:
+        $ref: '#/definitions/main.NullInt64'
+    type: object
+  main.APIRangeTrip:
+    properties:
+      end_range:
+        type: number
+      range_diff:
+        type: number
+      start_range:
+        type: number
+    type: object
+  main.APIStateRow:
+    properties:
+      end_date:
+        type: string
+      id:
+        type: integer
+      start_date:
+        type: string
+      state:
+        type: string
+    type: object
+  main.APIUnitsLengthTemp:
+    properties:
+      unit_of_length:
+        description: UnitsLength km 或 mi
+        type: string
+      unit_of_temperature:
+        description: UnitsTemperature C 或 F
+        type: string
+    type: object
+  main.APIUnitsLengthTempPressure:
+    properties:
+      unit_of_length:
+        description: UnitsLength km 或 mi
+        type: string
+      unit_of_pressure:
+        description: UnitsPressure bar 或 psi
+        type: string
+      unit_of_temperature:
+        description: UnitsTemperature C 或 F
+        type: string
+    type: object
+  main.APIUpdateRow:
+    properties:
+      end_date:
+        type: string
+      start_date:
+        type: string
+      update_id:
+        type: integer
+      version:
+        type: string
+    type: object
+  main.MQTTStatusActiveRoute:
+    properties:
+      destination:
+        type: string
+      distance_to_arrival:
+        type: number
+      energy_at_arrival:
+        type: integer
+      location:
+        $ref: '#/definitions/main.MQTTStatusGeoPoint'
+      minutes_to_arrival:
+        type: number
+      traffic_minutes_delay:
+        type: number
+    type: object
+  main.MQTTStatusBatterySnap:
+    properties:
+      battery_level:
+        type: integer
+      est_battery_range:
+        type: number
+      ideal_battery_range:
+        type: number
+      rated_battery_range:
+        type: number
+      usable_battery_level:
+        type: integer
+    type: object
+  main.MQTTStatusCharging:
+    properties:
+      charge_current_request:
+        type: integer
+      charge_current_request_max:
+        type: integer
+      charge_energy_added:
+        type: number
+      charge_limit_soc:
+        type: integer
+      charge_port_door_open:
+        type: boolean
+      charger_actual_current:
+        type: number
+      charger_phases:
+        type: integer
+      charger_power:
+        type: number
+      charger_voltage:
+        type: integer
+      charging_state:
+        type: string
+      plugged_in:
+        type: boolean
+      scheduled_charging_start_time:
+        type: string
+      time_to_full_charge:
+        type: number
+    type: object
+  main.MQTTStatusClimate:
+    properties:
+      climate_keeper_mode:
+        type: string
+      inside_temp:
+        type: number
+      is_climate_on:
+        type: boolean
+      is_preconditioning:
+        type: boolean
+      outside_temp:
+        type: number
+    type: object
+  main.MQTTStatusDriving:
+    properties:
+      active_route:
+        $ref: '#/definitions/main.MQTTStatusActiveRoute'
+      active_route_destination:
+        type: string
+      active_route_latitude:
+        type: number
+      active_route_longitude:
+        type: number
+      elevation:
+        type: integer
+      heading:
+        type: integer
+      power:
+        type: integer
+      shift_state:
+        type: string
+      speed:
+        type: integer
+    type: object
+  main.MQTTStatusExterior:
+    properties:
+      exterior_color:
+        type: string
+      spoiler_type:
+        type: string
+      wheel_type:
+        type: string
+    type: object
+  main.MQTTStatusGeoPoint:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  main.MQTTStatusGeodata:
+    properties:
+      geofence:
+        type: string
+      latitude:
+        type: number
+      location:
+        $ref: '#/definitions/main.MQTTStatusGeoPoint'
+      longitude:
+        type: number
+    type: object
+  main.MQTTStatusPayload:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      status:
+        $ref: '#/definitions/main.MQTTStatusSnapshot'
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTempPressure'
+    type: object
+  main.MQTTStatusResponse:
+    properties:
+      data:
+        $ref: '#/definitions/main.MQTTStatusPayload'
+    type: object
+  main.MQTTStatusSnapshot:
+    properties:
+      battery_details:
+        $ref: '#/definitions/main.MQTTStatusBatterySnap'
+      car_details:
+        $ref: '#/definitions/main.MQTTStatusVehicleModel'
+      car_exterior:
+        $ref: '#/definitions/main.MQTTStatusExterior'
+      car_geodata:
+        $ref: '#/definitions/main.MQTTStatusGeodata'
+      car_status:
+        $ref: '#/definitions/main.MQTTStatusVehicleState'
+      car_versions:
+        $ref: '#/definitions/main.MQTTStatusSoftwareVersions'
+      charging_details:
+        $ref: '#/definitions/main.MQTTStatusCharging'
+      climate_details:
+        $ref: '#/definitions/main.MQTTStatusClimate'
+      display_name:
+        type: string
+      driving_details:
+        $ref: '#/definitions/main.MQTTStatusDriving'
+      odometer:
+        type: number
+      state:
+        type: string
+      state_since:
+        type: string
+      tpms_details:
+        $ref: '#/definitions/main.MQTTStatusTPMS'
+    type: object
+  main.MQTTStatusSoftwareVersions:
+    properties:
+      update_available:
+        type: boolean
+      update_version:
+        type: string
+      version:
+        type: string
+    type: object
+  main.MQTTStatusTPMS:
+    properties:
+      tpms_pressure_fl:
+        type: number
+      tpms_pressure_fr:
+        type: number
+      tpms_pressure_rl:
+        type: number
+      tpms_pressure_rr:
+        type: number
+      tpms_soft_warning_fl:
+        type: boolean
+      tpms_soft_warning_fr:
+        type: boolean
+      tpms_soft_warning_rl:
+        type: boolean
+      tpms_soft_warning_rr:
+        type: boolean
+    type: object
+  main.MQTTStatusVehicleModel:
+    properties:
+      model:
+        type: string
+      trim_badging:
+        type: string
+    type: object
+  main.MQTTStatusVehicleState:
+    properties:
+      center_display_state:
+        type: integer
+      doors_open:
+        type: boolean
+      driver_front_door_open:
+        type: boolean
+      driver_rear_door_open:
+        type: boolean
+      frunk_open:
+        type: boolean
+      healthy:
+        type: boolean
+      is_user_present:
+        type: boolean
+      locked:
+        type: boolean
+      passenger_front_door_open:
+        type: boolean
+      passenger_rear_door_open:
+        type: boolean
+      sentry_mode:
+        type: boolean
+      trunk_open:
+        type: boolean
+      windows_open:
+        type: boolean
+    type: object
+  main.NullBool:
+    properties:
+      bool:
+        type: boolean
+      valid:
+        description: Valid is true if Bool is not NULL
+        type: boolean
+    type: object
+  main.NullFloat64:
+    properties:
+      float64:
+        type: number
+      valid:
+        description: Valid is true if Float64 is not NULL
+        type: boolean
+    type: object
+  main.NullInt64:
+    properties:
+      int64:
+        type: integer
+      valid:
+        description: Valid is true if Int64 is not NULL
+        type: boolean
+    type: object
+  main.RespAPIError:
+    properties:
+      error:
+        description: Error 错误说明
+        type: string
+    type: object
+  main.RespBatteryHealth:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespBatteryHealthData'
+    type: object
+  main.RespBatteryHealthData:
+    properties:
+      battery_health:
+        $ref: '#/definitions/main.APIBatteryHealth'
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespCarsList:
+    properties:
+      data:
+        allOf:
+        - $ref: '#/definitions/main.RespCarsListData'
+        description: Data 车辆列表或单车
+    type: object
+  main.RespCarsListData:
+    properties:
+      cars:
+        description: Cars 车辆数组
+        items:
+          $ref: '#/definitions/main.APICarsListCar'
+        type: array
+    type: object
+  main.RespChargeCurrent:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespChargeCurrentData'
+    type: object
+  main.RespChargeCurrentData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      charge:
+        $ref: '#/definitions/main.APIChargeCurrent'
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespChargeDetail:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespChargeDetailData'
+    type: object
+  main.RespChargeDetailData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      charge:
+        $ref: '#/definitions/main.APIChargeDetail'
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespChargesList:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespChargesListData'
+    type: object
+  main.RespChargesListData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      charges:
+        items:
+          $ref: '#/definitions/main.APIChargesRow'
+        type: array
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespDatabase:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIDatabaseInfo'
+    type: object
+  main.RespDriveDetail:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespDriveDetailData'
+    type: object
+  main.RespDriveDetailData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      drive:
+        $ref: '#/definitions/main.APIDriveDetail'
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespDrivesList:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespDrivesListData'
+    type: object
+  main.RespDrivesListData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      drives:
+        items:
+          $ref: '#/definitions/main.APIDriveListRow'
+        type: array
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespEnabledCommandNames:
+    properties:
+      enabled_commands:
+        description: EnabledCommands 当前环境允许执行的指令名
+        items:
+          type: string
+        type: array
+    type: object
+  main.RespGlobalSettings:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespGlobalSettingsData'
+    type: object
+  main.RespGlobalSettingsData:
+    properties:
+      settings:
+        $ref: '#/definitions/main.APIGlobalSettings'
+    type: object
+  main.RespHTTPRoot:
+    properties:
+      message:
+        description: Message 运行提示
+        type: string
+      path:
+        description: Path 当前路径
+        type: string
+    type: object
+  main.RespHealthz:
+    properties:
+      status:
+        description: Status HTTP 状态文本
+        type: string
+    type: object
+  main.RespMetricsChargeLevel:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsChargeLevelData'
+    type: object
+  main.RespMetricsChargingStats:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsChargingStatsData'
+    type: object
+  main.RespMetricsChargingStatsExtra:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsChargingStatsExtraData'
+    type: object
+  main.RespMetricsDriveStats:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsDriveStatsData'
+    type: object
+  main.RespMetricsDriveStatsExtra:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsDriveStatsExtraData'
+    type: object
+  main.RespMetricsDutchTax:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsDutchTaxData'
+    type: object
+  main.RespMetricsEfficiency:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsEfficiencyData'
+    type: object
+  main.RespMetricsLocations:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsLocationsData'
+    type: object
+  main.RespMetricsMileage:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsMileageData'
+    type: object
+  main.RespMetricsOverview:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsOverviewData'
+    type: object
+  main.RespMetricsProjectedRange:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsProjectedRangeData'
+    type: object
+  main.RespMetricsStatesAnalytics:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsStatesAnalyticsData'
+    type: object
+  main.RespMetricsStatistics:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsStatisticsData'
+    type: object
+  main.RespMetricsTimeline:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsTimelineData'
+    type: object
+  main.RespMetricsTrip:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsTripData'
+    type: object
+  main.RespMetricsVampireDrain:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsVampireDrainData'
+    type: object
+  main.RespMetricsVisited:
+    properties:
+      data:
+        $ref: '#/definitions/main.APIMetricsVisitedData'
+    type: object
+  main.RespPing:
+    properties:
+      message:
+        description: Message 固定为 pong
+        type: string
+    type: object
+  main.RespPositionsData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      positions:
+        items:
+          $ref: '#/definitions/main.APIPositionRow'
+        type: array
+      units:
+        $ref: '#/definitions/main.APIUnitsLengthTemp'
+    type: object
+  main.RespPositionsList:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespPositionsData'
+    type: object
+  main.RespReadyz:
+    properties:
+      status:
+        description: Status HTTP 状态文本
+        type: string
+    type: object
+  main.RespStatesData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      states:
+        items:
+          $ref: '#/definitions/main.APIStateRow'
+        type: array
+    type: object
+  main.RespStatesList:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespStatesData'
+    type: object
+  main.RespUpdatesData:
+    properties:
+      car:
+        $ref: '#/definitions/main.APICarRef'
+      updates:
+        items:
+          $ref: '#/definitions/main.APIUpdateRow'
+        type: array
+    type: object
+  main.RespUpdatesList:
+    properties:
+      data:
+        $ref: '#/definitions/main.RespUpdatesData'
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 与 TeslaMate 采集数据对齐的 JSON API；看板对照见仓库 `执行计划.md`。
+  license:
+    name: MIT
+  title: TeslaMate API
+  version: "1.0"
+paths:
+  /:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespHTTPRoot'
+      summary: 根路径（服务运行提示）
+      tags:
+      - system
+  /api:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespHTTPRoot'
+      summary: /api 根路径
+      tags:
+      - system
+  /api/healthz:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespHealthz'
+      summary: 存活探针
+      tags:
+      - system
+  /api/ping:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespPing'
+      summary: Ping
+      tags:
+      - system
+  /api/readyz:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespReadyz'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+      summary: 就绪探针
+      tags:
+      - system
+  /api/v1:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespHTTPRoot'
+      summary: API v1 根路径
+      tags:
+      - system
+  /api/v1/cars:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespCarsList'
+      summary: 车辆列表或详情
+      tags:
+      - cars
+  /api/v1/cars/{CarID}:
+    get:
+      parameters:
+      - description: 车辆 ID；省略则列出全部
+        example: 1
+        in: path
+        name: CarID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespCarsList'
+      summary: 车辆列表或详情
+      tags:
+      - cars
+  /api/v1/cars/{CarID}/battery-health:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespBatteryHealth'
+      summary: 电池健康
+      tags:
+      - cars
+  /api/v1/cars/{CarID}/charges:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间 RFC3339
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间 RFC3339
+        in: query
+        name: endDate
+        type: string
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 100
+        description: 每页条数
+        in: query
+        name: show
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespChargesList'
+      summary: 充电记录列表
+      tags:
+      - charges
+  /api/v1/cars/{CarID}/charges/{ChargeID}:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 充电过程 ID
+        in: path
+        name: ChargeID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespChargeDetail'
+      summary: 充电详情
+      tags:
+      - charges
+  /api/v1/cars/{CarID}/charges/current:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespChargeCurrent'
+      summary: 当前充电
+      tags:
+      - charges
+  /api/v1/cars/{CarID}/command:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: POST /command/*、/wake_up：Tesla API 原始 JSON
+          schema:
+            items:
+              type: integer
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+      summary: 车辆指令 / 唤醒
+      tags:
+      - commands
+  /api/v1/cars/{CarID}/command/{Command}:
+    post:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 指令名（POST /command/:Command）
+        in: path
+        name: Command
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: POST /command/*、/wake_up：Tesla API 原始 JSON
+          schema:
+            items:
+              type: integer
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+      summary: 车辆指令 / 唤醒
+      tags:
+      - commands
+  /api/v1/cars/{CarID}/drives:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间 RFC3339
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间 RFC3339
+        in: query
+        name: endDate
+        type: string
+      - description: 最小距离
+        in: query
+        name: minDistance
+        type: number
+      - description: 最大距离
+        in: query
+        name: maxDistance
+        type: number
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 100
+        description: 每页条数
+        in: query
+        name: show
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespDrivesList'
+      summary: 行程列表
+      tags:
+      - drives
+  /api/v1/cars/{CarID}/drives/{DriveID}:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 行程 ID
+        in: path
+        name: DriveID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespDriveDetail'
+      summary: 行程详情
+      tags:
+      - drives
+  /api/v1/cars/{CarID}/logging:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: PUT：TeslaMate 日志接口原始 JSON
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: TeslaMate 日志控制
+      tags:
+      - commands
+  /api/v1/cars/{CarID}/logging/{Command}:
+    put:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 子命令
+        in: path
+        name: Command
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: PUT：TeslaMate 日志接口原始 JSON
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: TeslaMate 日志控制
+      tags:
+      - commands
+  /api/v1/cars/{CarID}/metrics/charge-level:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - default: 2
+        description: 分桶分钟数
+        in: query
+        name: bucketMinutes
+        type: integer
+      - description: 开始（同时作 date_bin 对齐原点，同看板 $__from）
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsChargeLevel'
+      summary: 充电/停车电量曲线（分桶）
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/charging-stats:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始（RFC3339），缺省为最近 30 天起点
+        in: query
+        name: startDate
+        type: string
+      - description: 结束（RFC3339），缺省为当前 UTC
+        in: query
+        name: endDate
+        type: string
+      - default: 1
+        description: 最短充电时长（分钟），对应 min_duration
+        in: query
+        name: minDuration
+        type: integer
+      - description: ideal|rated，用于 Ø Cost per 100 等派生
+        in: query
+        name: preferredRange
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsChargingStats'
+      summary: 充电统计汇总
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/charging-stats/extra:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      - default: 1
+        description: 最短分钟
+        in: query
+        name: minDuration
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsChargingStatsExtra'
+      summary: 充电统计扩展
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/drive-stats:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间
+        in: query
+        name: endDate
+        type: string
+      - description: ideal 或 rated，默认 settings
+        in: query
+        name: preferredRange
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsDriveStats'
+      summary: 驾驶统计汇总
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/drive-stats/extra:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      - description: 排除地址子串，逗号分隔
+        in: query
+        name: exclude
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsDriveStatsExtra'
+      summary: 驾驶统计扩展
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/efficiency:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间
+        in: query
+        name: endDate
+        type: string
+      - description: ideal 或 rated
+        in: query
+        name: preferredRange
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsEfficiency'
+      summary: 效率指标
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/locations:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间
+        in: query
+        name: endDate
+        type: string
+      - description: 地址模糊过滤，对应 address_filter
+        in: query
+        name: addressFilter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsLocations'
+      summary: 地点与地址聚合
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/mileage:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsMileage'
+      summary: 里程曲线数据
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/overview:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsOverview'
+      summary: 总览 KPI 包
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/projected-range:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - default: 1 hour
+        description: 如 5 minutes, 1 hour, 1 day
+        in: query
+        name: interval
+        type: string
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      - description: ideal|rated
+        in: query
+        name: preferredRange
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsProjectedRange'
+      summary: 表显续航/里程/外温聚合
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/reports/dutch-tax:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsDutchTax'
+      summary: 荷兰税务报表行程列表
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/states-analytics:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsStatesAnalytics'
+      summary: 状态分析
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/statistics:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: day|week|month|year
+        in: query
+        name: period
+        required: true
+        type: string
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      - description: ideal|rated
+        in: query
+        name: preferredRange
+        type: string
+      - description: IANA 时区，默认 TZ 环境变量
+        in: query
+        name: timezone
+        type: string
+      - default: 0
+        description: refId D：0=事件流 1=positions 细粒度毛电耗
+        enum:
+        - 0
+        - 1
+        in: query
+        name: highPrecision
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsStatistics'
+      summary: 周期统计（Statistics）
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/timeline:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间
+        in: query
+        name: endDate
+        type: string
+      - description: 逗号分隔：driving,charging,updating；缺省为全部
+        in: query
+        name: actions
+        type: string
+      - description: 模糊匹配（版本号等）
+        in: query
+        name: textFilter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsTimeline'
+      summary: 活动时间线（简化）
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/trip:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsTrip'
+      summary: 长途 Trip 汇总
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/vampire-drain:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间
+        in: query
+        name: endDate
+        type: string
+      - description: ideal 或 rated
+        in: query
+        name: preferredRange
+        type: string
+      - default: 6
+        description: 最小间隔（小时），对应 duration 变量
+        in: query
+        name: durationHours
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsVampireDrain'
+      summary: 静置掉电（吸血鬼放电）
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/metrics/visited:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始
+        in: query
+        name: startDate
+        type: string
+      - description: 结束
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespMetricsVisited'
+      summary: Visited 看板数据
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/positions:
+    get:
+      description: 查询 `positions` 表（时间序列与经纬度等）。支持 startDate、endDate 过滤 `date` 列，分页参数
+        page、show（单页最大 5000）。
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间 RFC3339
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间 RFC3339
+        in: query
+        name: endDate
+        type: string
+      - default: 1
+        description: 页码，从 1 开始
+        in: query
+        name: page
+        type: integer
+      - default: 500
+        description: 每页条数
+        in: query
+        name: show
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespPositionsList'
+      summary: 车辆位置与采样点
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/states:
+    get:
+      description: 查询 TeslaMate `states` 表（offline / asleep / online）。支持 startDate、endDate（RFC3339），默认按
+        start_date 降序。
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      - description: 开始时间 RFC3339
+        in: query
+        name: startDate
+        type: string
+      - description: 结束时间 RFC3339
+        in: query
+        name: endDate
+        type: string
+      - default: 1
+        description: 页码，从 1 开始
+        in: query
+        name: page
+        type: integer
+      - default: 100
+        description: 每页条数
+        in: query
+        name: show
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespStatesList'
+      summary: 车辆在线状态历史
+      tags:
+      - dashboards
+  /api/v1/cars/{CarID}/status:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.MQTTStatusResponse'
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+      summary: 实时状态（MQTT）
+      tags:
+      - cars
+  /api/v1/cars/{CarID}/updates:
+    get:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespUpdatesList'
+      summary: 软件更新记录
+      tags:
+      - cars
+  /api/v1/cars/{CarID}/wake_up:
+    post:
+      parameters:
+      - description: 车辆 ID
+        example: 1
+        in: path
+        name: CarID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: POST /command/*、/wake_up：Tesla API 原始 JSON
+          schema:
+            items:
+              type: integer
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.RespAPIError'
+      summary: 车辆指令 / 唤醒
+      tags:
+      - commands
+  /api/v1/database:
+    get:
+      description: 对齐 `database-info.json` 中与 PG 实例相关的面板。`includeTableStats=true`
+        时查询 `pg_statio_user_tables`；`includeTableRows=true` 时对每表 count（可能很慢）。
+      parameters:
+      - default: false
+        description: 是否包含表大小统计
+        in: query
+        name: includeTableStats
+        type: boolean
+      - default: false
+        description: 是否估算各表行数（慢）
+        in: query
+        name: includeTableRows
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespDatabase'
+      summary: 数据库实例信息
+      tags:
+      - dashboards
+  /api/v1/globalsettings:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.RespGlobalSettings'
+      summary: 全局设置
+      tags:
+      - settings
+schemes:
+- http
+swagger: "2.0"

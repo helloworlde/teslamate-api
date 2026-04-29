@@ -153,39 +153,28 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 ## API documentation
 
-More detailed documentation of every endpoint will come..
+交互式 OpenAPI（Swagger UI）在运行服务后访问：**`http://localhost:8080/swagger/index.html`**（若端口或主机不同请相应替换）。规范文件由 [swag](https://github.com/swaggo/swag) 根据源码注释生成，位于 `src/docs/swagger.json`。修改接口后请在仓库根目录执行：
+
+```bash
+swag init -g webserver.go -d src -o src/docs --parseDependency --parseInternal
+```
+
+更细的分阶段看板与 API 对照见仓库根目录 **`执行计划.md`**。各看板文件、面板与接口的逐项说明见 **`dashboards/CATALOG.md`**。**按功能聚合的去重视图**（含 `charging-stats` / `extra` 等同域关系、已废弃路径说明）见 **`dashboards/API_AGGREGATE.md`**。
 
 ### Available endpoints
 
-- GET `/api`
-- GET `/api/v1`
-- GET `/api/v1/cars`
-- GET `/api/v1/cars/:CarID`
-- GET `/api/v1/cars/:CarID/battery-health`
-- GET `/api/v1/cars/:CarID/charges`
-  - Supported parameters:
-    - `startDate` (optional, use canonical UTC format in RFC3339)
-    - `endDate` (optional, use canonical UTC format in RFC3339)
-- GET `/api/v1/cars/:CarID/charges/current`
-- GET `/api/v1/cars/:CarID/charges/:ChargeID`
-- GET `/api/v1/cars/:CarID/command`
-- POST `/api/v1/cars/:CarID/command/:Command`
-- GET `/api/v1/cars/:CarID/drives`
-  - Supported parameters:
-    - `startDate` (optional, use canonical UTC format in RFC3339)
-    - `endDate` (optional, use canonical UTC format in RFC3339)
-    - `minDistance` (optional, filter by minimum trip distance, units based on TeslaMate settings)
-    - `maxDistance` (optional, filter by maximum trip distance, units based on TeslaMate settings)
-- GET `/api/v1/cars/:CarID/drives/:DriveID`
-- PUT `/api/v1/cars/:CarID/logging/:Command`
-- GET `/api/v1/cars/:CarID/logging`
-- GET `/api/v1/cars/:CarID/status`
-- GET `/api/v1/cars/:CarID/updates`
-- POST `/api/v1/cars/:CarID/wake_up`
-- GET `/api/v1/globalsettings`
-- GET `/api/healthz`
-- GET `/api/ping`
-- GET `/api/readyz`
+前缀 **`/api/v1`**（另有 **`/api`**、**`/api/ping`**、**`/api/healthz`**、**`/api/readyz`**）。
+
+| 分组 | 路径模式 |
+|------|----------|
+| 服务信息 | `GET /api`、`GET /api/v1` |
+| 全局 | `GET /database`、`GET /globalsettings`、`GET /cars` |
+| 单车 | `GET /cars/:CarID`、`battery-health`、`states`、`positions`、`status`、`updates` |
+| 充电 / 行程 | `GET .../charges`（`startDate`/`endDate`）、`.../charges/current`、`.../charges/:ChargeID`；`GET .../drives`（同上 + `minDistance`/`maxDistance`）、`.../drives/:DriveID` |
+| 指令与日志 | `GET .../command`（列出可用指令；旧路径 **`.../commands`** **308** 至此）、`POST .../command/:Command`、`POST .../wake_up`；`GET`/`PUT .../logging`、`PUT .../logging/:Command` |
+| 看板 metrics | `GET .../metrics/<name>`，含 `charging-stats` + `charging-stats/extra`、`drive-stats` + `drive-stats/extra`，以及 `efficiency`、`mileage`、`locations`、`timeline`、`vampire-drain`、`statistics`、`charge-level`、`projected-range`、`overview`、`states-analytics`、`visited`、`dutch-tax`、`trip` |
+
+完整参数与各端点说明以 **Swagger UI**（`/swagger/index.html`）及 **`src/docs/swagger.json`** 为准。
 
 > [!TIP]
 > Canonical UTC format in RFC3339, e.g. `2006-01-02T15:04:05Z` or `2006-01-02T15:04:05+07:00`

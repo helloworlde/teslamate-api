@@ -10,7 +10,7 @@ import (
 	"errors"
 )
 
-// NullInt64 is an alias for sql.NullInt64 data type
+// NullInt64 可空整型，JSON 序列化为数字或 null（用于 API 响应字段）。
 type NullInt64 struct {
 	sql.NullInt64
 }
@@ -23,7 +23,7 @@ func (ni *NullInt64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(ni.Int64)
 }
 
-// NullBool is an alias for sql.NullBool data type
+// NullBool 可空布尔，JSON 序列化为 true/false 或 null。
 type NullBool struct {
 	sql.NullBool
 }
@@ -36,7 +36,7 @@ func (nb *NullBool) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nb.Bool)
 }
 
-// NullFloat64 is an alias for sql.NullFloat64 data type
+// NullFloat64 可空浮点，JSON 序列化为数字或 null。
 type NullFloat64 struct {
 	sql.NullFloat64
 }
@@ -49,6 +49,7 @@ func (nf *NullFloat64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nf.Float64)
 }
 
+// NullString 可空字符串（数据库 NULL 映射为空串），JSON 省略空值语义与 sql 扫描配合使用。
 type NullString string
 
 func (s *NullString) Scan(value interface{}) error {

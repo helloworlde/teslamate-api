@@ -12,6 +12,13 @@ const (
 	maxChargeInactivityThresholdMinutes = 15
 )
 
+// TeslaMateAPICarsChargesCurrentV1 当前进行中充电过程（若有）。
+// @Summary 当前充电
+// @Tags charges
+// @Produce json
+// @Param CarID path int true "车辆 ID" example(1)
+// @Success 200 {object} RespChargeCurrent
+// @Router /api/v1/cars/{CarID}/charges/current [get]
 // TeslaMateAPICarsChargesCurrentV1 func
 func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 
@@ -25,95 +32,11 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 
-	// creating structs for /cars/<CarID>/charges/current
-	// Car struct - child of Data
-	type Car struct {
-		CarID   int        `json:"car_id"`   // smallint
-		CarName NullString `json:"car_name"` // text (nullable)
-	}
-	// BatteryDetails struct - child of Charge
-	type BatteryDetails struct {
-		StartBatteryLevel   int `json:"start_battery_level"`   // int
-		CurrentBatteryLevel int `json:"current_battery_level"` // int
-	}
-	// PreferredRange struct - child of Charge
-	type PreferredRange struct {
-		StartRange   float64 `json:"start_range"`   // float64
-		CurrentRange float64 `json:"current_range"` // float64
-		AddedRange   float64 `json:"added_range"`   // float64
-	}
-	// ChargerDetails struct - child of ChargeDetails
-	type ChargerDetails struct {
-		ChargerActualCurrent int `json:"charger_actual_current"` // int
-		ChargerPhases        int `json:"charger_phases"`         // int
-		ChargerPilotCurrent  int `json:"charger_pilot_current"`  // int
-		ChargerPower         int `json:"charger_power"`          // int
-		ChargerVoltage       int `json:"charger_voltage"`        // int
-	}
-	// FastChargerInfo struct - child of ChargeDetails
-	type FastChargerInfo struct {
-		FastChargerPresent bool    `json:"fast_charger_present"`         // bool
-		FastChargerBrand   *string `json:"fast_charger_brand,omitempty"` // string or null
-		FastChargerType    *string `json:"fast_charger_type,omitempty"`  // string or null
-	}
-	// BatteryInfo struct - child of ChargeDetails
-	type BatteryInfo struct {
-		RatedBatteryRange    float64  `json:"rated_battery_range"`     // float64
-		BatteryHeater        bool     `json:"battery_heater"`          // bool
-		BatteryHeaterOn      bool     `json:"battery_heater_on"`       // bool
-		BatteryHeaterNoPower NullBool `json:"battery_heater_no_power"` // bool
-	}
-	// ChargeDetails struct - child of Charge
-	type ChargeDetails struct {
-		DetailID             int             `json:"detail_id"`                   // integer
-		Date                 string          `json:"date"`                        // string
-		BatteryLevel         int             `json:"battery_level"`               // int
-		UsableBatteryLevel   int             `json:"usable_battery_level"`        // int
-		ChargeEnergyAdded    float64         `json:"charge_energy_added"`         // float64
-		NotEnoughPowerToHeat NullBool        `json:"not_enough_power_to_heat"`    // bool
-		ChargerDetails       ChargerDetails  `json:"charger_details"`             // struct
-		BatteryInfo          BatteryInfo     `json:"battery_info"`                // struct
-		ConnChargeCable      interface{}     `json:"conn_charge_cable,omitempty"` // string or null
-		FastChargerInfo      FastChargerInfo `json:"fast_charger_info"`           // struct
-		OutsideTemp          float64         `json:"outside_temp"`                // float64
-	}
-	// Charge struct - child of Data
-	type Charge struct {
-		ChargeID          int             `json:"charge_id"`           // int
-		StartDate         string          `json:"start_date"`          // string
-		IsCharging        bool            `json:"is_charging"`         // bool
-		Address           string          `json:"address"`             // string
-		ChargeEnergyAdded float64         `json:"charge_energy_added"` // float64
-		Cost              float64         `json:"cost"`                // float64
-		DurationMin       int             `json:"duration_min"`        // int
-		DurationStr       string          `json:"duration_str"`        // string
-		BatteryDetails    BatteryDetails  `json:"battery_details"`     // BatteryDetails
-		RatedRange        PreferredRange  `json:"rated_range"`         // PreferredRange
-		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
-		Odometer          float64         `json:"odometer"`            // float64
-		ChargeDetails     []ChargeDetails `json:"charge_details"`      // struct
-	}
-	// TeslaMateUnits struct - child of Data
-	type TeslaMateUnits struct {
-		UnitsLength      string `json:"unit_of_length"`      // string
-		UnitsTemperature string `json:"unit_of_temperature"` // string
-	}
-	// Data struct - child of JSONData
-	type Data struct {
-		Car            Car            `json:"car"`
-		Charge         Charge         `json:"charge"`
-		TeslaMateUnits TeslaMateUnits `json:"units"`
-	}
-	// JSONData struct - main
-	type JSONData struct {
-		Data Data `json:"data"`
-	}
-
 	// creating required vars
 	var (
 		CarName                       NullString
-		charge                        Charge
-		ChargeDetailsData             []ChargeDetails
+		charge                        APIChargeCurrent
+		ChargeDetailsData             []APIChargeDetailRow
 		UnitsLength, UnitsTemperature string
 		isCharging                    bool
 	)
@@ -303,7 +226,7 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 		)
 
 		// Creating chargedetails object based on struct
-		chargedetails := ChargeDetails{}
+		chargedetails := APIChargeDetailRow{}
 
 		// Scanning row and putting values into temporary variables
 		err = rows.Scan(
@@ -435,14 +358,14 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 	}
 
 	// Build the data-blob
-	jsonData := JSONData{
-		Data{
-			Car: Car{
+	jsonData := RespChargeCurrent{
+		Data: RespChargeCurrentData{
+			Car: APICarRef{
 				CarID:   CarID,
 				CarName: CarName,
 			},
 			Charge: charge,
-			TeslaMateUnits: TeslaMateUnits{
+			TeslaMateUnits: APIUnitsLengthTemp{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,
 			},

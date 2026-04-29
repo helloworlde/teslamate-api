@@ -1,3 +1,12 @@
+// TeslaMate 车辆数据 REST API（PostgreSQL + MQTT 状态）。OpenAPI 文档由 swag 生成，见 /swagger/index.html。
+//
+// @title TeslaMate API
+// @version 1.0
+// @description 与 TeslaMate 采集数据对齐的 JSON API；看板对照见仓库 `执行计划.md`。
+// @license.name MIT
+// @host localhost:8080
+// @BasePath /
+// @schemes http
 package main
 
 import (
@@ -17,6 +26,10 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	docs "github.com/tobiasehlert/teslamateapi/src/docs"
 )
 
 const (
@@ -94,6 +107,8 @@ func main() {
 	// kicking off Gin in value r
 	r := gin.Default()
 
+	docs.SwaggerInfo.BasePath = "/"
+
 	// gin middleware to enable GZIP support
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
@@ -104,32 +119,25 @@ func main() {
 
 	// set 404 not found page
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
+		c.JSON(http.StatusNotFound, RespPageNotFound{Code: "PAGE_NOT_FOUND", Message: "Page not found"})
 	})
 
 	// disable proxy feature of gin
 	_ = r.SetTrustedProxies(nil)
 
-	// root endpoint telling API is running
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container running..", "path": r.BasePath()})
-	})
+	r.GET("/", httpRoot)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// TeslaMateApi /api endpoints
 	api := r.Group("/api")
 	{
-		// TeslaMateApi /api root
-		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container running..", "path": api.BasePath()})
-		})
+		api.GET("/", httpAPIRoot)
 
 		// TeslaMateApi /api/v1 endpoints
 		v1 := api.Group("/v1")
 		{
-			// TeslaMateApi /api/v1 root
-			v1.GET("/", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 running..", "path": v1.BasePath()})
-			})
+			v1.GET("/", httpAPIv1Root)
 
 			// v1 /api/v1/cars endpoints
 			v1.GET("/cars", TeslaMateAPICarsV1)
@@ -138,14 +146,40 @@ func main() {
 			// v1 /api/v1/cars/:CarID/battery-health endpoints
 			v1.GET("/cars/:CarID/battery-health", TeslaMateAPICarsBatteryHealthV1)
 
+			v1.GET("/cars/:CarID/states", TeslaMateAPICarsStatesV1)
+			v1.GET("/cars/:CarID/positions", TeslaMateAPICarsPositionsV1)
+
+			v1.GET("/database", TeslaMateAPIDatabaseV1)
+
+			v1.GET("/cars/:CarID/metrics/charging-stats/extra", TeslaMateAPICarsMetricsChargingStatsExtraV1)
+			v1.GET("/cars/:CarID/metrics/drive-stats/extra", TeslaMateAPICarsMetricsDriveStatsExtraV1)
+			v1.GET("/cars/:CarID/metrics/charging-stats", TeslaMateAPICarsMetricsChargingStatsV1)
+			v1.GET("/cars/:CarID/metrics/drive-stats", TeslaMateAPICarsMetricsDriveStatsV1)
+			v1.GET("/cars/:CarID/metrics/efficiency", TeslaMateAPICarsMetricsEfficiencyV1)
+			v1.GET("/cars/:CarID/metrics/mileage", TeslaMateAPICarsMetricsMileageV1)
+			v1.GET("/cars/:CarID/metrics/locations", TeslaMateAPICarsMetricsLocationsV1)
+			v1.GET("/cars/:CarID/metrics/timeline", TeslaMateAPICarsMetricsTimelineV1)
+			v1.GET("/cars/:CarID/metrics/vampire-drain", TeslaMateAPICarsMetricsVampireDrainV1)
+			v1.GET("/cars/:CarID/metrics/statistics", TeslaMateAPICarsMetricsStatisticsV1)
+			v1.GET("/cars/:CarID/metrics/charge-level", TeslaMateAPICarsMetricsChargeLevelV1)
+			v1.GET("/cars/:CarID/metrics/projected-range", TeslaMateAPICarsMetricsProjectedRangeV1)
+			v1.GET("/cars/:CarID/metrics/overview", TeslaMateAPICarsMetricsOverviewV1)
+			v1.GET("/cars/:CarID/metrics/states-analytics", TeslaMateAPICarsMetricsStatesAnalyticsV1)
+			v1.GET("/cars/:CarID/metrics/visited", TeslaMateAPICarsMetricsVisitedV1)
+			v1.GET("/cars/:CarID/metrics/dutch-tax", TeslaMateAPICarsMetricsDutchTaxV1)
+			v1.GET("/cars/:CarID/metrics/trip", TeslaMateAPICarsMetricsTripV1)
+
 			// v1 /api/v1/cars/:CarID/charges endpoints
 			v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
 			v1.GET("/cars/:CarID/charges/current", TeslaMateAPICarsChargesCurrentV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
 
-			// v1 /api/v1/cars/:CarID/command endpoints
+			// v1 /api/v1/cars/:CarID/command endpoints（/commands 与 /command 行为相同，仅保留 canonical /command，旧路径 308 重定向）
 			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
-			v1.GET("/cars/:CarID/commands", TeslaMateAPICarsCommandV1)
+			v1.GET("/cars/:CarID/commands", func(c *gin.Context) {
+				p := strings.Replace(c.Request.URL.Path, "/commands", "/command", 1)
+				c.Redirect(http.StatusPermanentRedirect, p)
+			})
 			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
 
 			// v1 /api/v1/cars/:CarID/drives endpoints
@@ -169,8 +203,7 @@ func main() {
 			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
 		}
 
-		// /api/ping endpoint
-		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+		api.GET("/ping", apiPing)
 
 		// health endpoints for kubernetes
 		api.GET("/healthz", healthz)
@@ -272,7 +305,7 @@ func initDBconnection() {
 
 func TeslaMateAPIHandleErrorResponse(c *gin.Context, s1 string, s2 string, s3 string) {
 	log.Println("[error] " + s1 + " - (" + c.Request.RequestURI + "). " + s2 + "; " + s3)
-	c.JSON(http.StatusOK, gin.H{"error": s2})
+	c.JSON(http.StatusOK, RespAPIError{Error: s2})
 }
 
 func TeslaMateAPIHandleOtherResponse(c *gin.Context, httpCode int, s string, j interface{}) {
@@ -434,15 +467,62 @@ func checkArrayContainsString(s []string, e string) bool {
 }
 
 // healthz is a liveness probe.
+// @Summary 存活探针
+// @Tags system
+// @Produce json
+// @Success 200 {object} RespHealthz
+// @Router /api/healthz [get]
 func healthz(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusText(http.StatusOK)})
+	c.JSON(http.StatusOK, RespHealthz{Status: http.StatusText(http.StatusOK)})
 }
 
 // readyz is a readiness probe.
+// @Summary 就绪探针
+// @Tags system
+// @Produce json
+// @Success 200 {object} RespReadyz
+// @Failure 503 {object} RespAPIError
+// @Router /api/readyz [get]
 func readyz(c *gin.Context) {
 	if isReady == nil || !isReady.Load().(bool) {
-		c.JSON(http.StatusServiceUnavailable, gin.H{"error": http.StatusText(http.StatusServiceUnavailable)})
+		c.JSON(http.StatusServiceUnavailable, RespAPIError{Error: http.StatusText(http.StatusServiceUnavailable)})
 		return
 	}
-	TeslaMateAPIHandleSuccessResponse(c, "webserver", gin.H{"status": http.StatusText(http.StatusOK)})
+	TeslaMateAPIHandleSuccessResponse(c, "webserver", RespReadyz{Status: http.StatusText(http.StatusOK)})
+}
+
+// @Summary 根路径（服务运行提示）
+// @Tags system
+// @Produce json
+// @Success 200 {object} RespHTTPRoot
+// @Router / [get]
+func httpRoot(c *gin.Context) {
+	c.JSON(http.StatusOK, RespHTTPRoot{Message: "TeslaMateApi container running..", Path: "/"})
+}
+
+// @Summary /api 根路径
+// @Tags system
+// @Produce json
+// @Success 200 {object} RespHTTPRoot
+// @Router /api [get]
+func httpAPIRoot(c *gin.Context) {
+	c.JSON(http.StatusOK, RespHTTPRoot{Message: "TeslaMateApi container running..", Path: "/api"})
+}
+
+// @Summary API v1 根路径
+// @Tags system
+// @Produce json
+// @Success 200 {object} RespHTTPRoot
+// @Router /api/v1 [get]
+func httpAPIv1Root(c *gin.Context) {
+	c.JSON(http.StatusOK, RespHTTPRoot{Message: "TeslaMateApi v1 running..", Path: "/api/v1"})
+}
+
+// @Summary Ping
+// @Tags system
+// @Produce json
+// @Success 200 {object} RespPing
+// @Router /api/ping [get]
+func apiPing(c *gin.Context) {
+	c.JSON(http.StatusOK, RespPing{Message: "pong"})
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -12,6 +11,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// TeslaMateAPICarsCommandV1 转发车辆指令至 Tesla API（需 ENABLE_COMMANDS 与 API_TOKEN）。
+// @Summary 车辆指令 / 唤醒
+// @Tags commands
+// @Produce json
+// @Param CarID path int true "车辆 ID" example(1)
+// @Param Command path string false "指令名（POST /command/:Command）"
+// @Success 200 {object} RespEnabledCommandNames "GET /command：可用指令列表"
+// @Success 200 {object} TeslaUpstreamJSON "POST /command/*、/wake_up：Tesla API 原始 JSON"
+// @Failure 401 {object} RespAPIError
+// @Failure 403 {object} RespAPIError
+// @Router /api/v1/cars/{CarID}/command [get]
+// @Router /api/v1/cars/{CarID}/command/{Command} [post]
+// @Router /api/v1/cars/{CarID}/wake_up [post]
 // TeslaMateAPICarsCommandV1 func
 func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
@@ -19,27 +31,26 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	var (
 		CarsCommandsError1                                 = "Unable to load cars."
 		TeslaAccessToken, TeslaVehicleID, TeslaEndpointUrl string
-		jsonData                                           map[string]interface{}
 		err                                                error
 	)
 
 	// check if commands are enabled.. if not we need to abort
 	if !getEnvAsBool("ENABLE_COMMANDS", false) {
 		log.Println("[warning] TeslaMateAPICarsCommandV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")
-		TeslaMateAPIHandleOtherResponse(c, http.StatusForbidden, "TeslaMateAPICarsCommandV1", gin.H{"error": "You are not allowed to access commands"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusForbidden, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "You are not allowed to access commands"})
 		return
 	}
 
 	// if request method is GET return list of commands
 	if c.Request.Method == http.MethodGet {
-		TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsCommandV1", gin.H{"enabled_commands": allowList})
+		TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsCommandV1", RespEnabledCommandNames{EnabledCommands: allowList})
 		return
 	}
 
 	// authentication for the endpoint
 	validToken, errorMessage := validateAuthToken(c)
 	if !validToken {
-		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsCommandV1", gin.H{"error": errorMessage})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsCommandV1", RespAPIError{Error: errorMessage})
 		return
 	}
 
@@ -47,7 +58,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	CarID := convertStringToInteger(c.Param("CarID"))
 	if CarID == 0 {
 		log.Println("[error] TeslaMateAPICarsCommandV1 CarID is invalid (zero)!")
-		TeslaMateAPIHandleOtherResponse(c, http.StatusBadRequest, "TeslaMateAPICarsCommandV1", gin.H{"error": "CarID invalid"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusBadRequest, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "CarID invalid"})
 		return
 	}
 
@@ -55,7 +66,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	reqBody, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Println("[error] TeslaMateAPICarsCommandV1 error in first io.ReadAll", err)
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "internal io reading error"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "internal io reading error"})
 		return
 	}
 
@@ -68,7 +79,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	if !checkArrayContainsString(allowList, command) {
 		log.Println("[warning] TeslaMateAPICarsCommandV1 command not allowed!")
-		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsCommandV1", gin.H{"error": "unauthorized"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "unauthorized"})
 		return
 	}
 
@@ -103,7 +114,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	teslaMateEncryptionKey := getEnv("ENCRYPTION_KEY", "")
 	if teslaMateEncryptionKey == "" {
 		log.Println("[error] TeslaMateAPICarsCommandV1 can't get ENCRYPTION_KEY.. will fail to perform command.")
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "missing ENCRYPTION_KEY env variable"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "missing ENCRYPTION_KEY env variable"})
 		return
 	}
 
@@ -127,7 +138,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// check response error
 	if err != nil {
 		log.Println("[error] TeslaMateAPICarsCommandV1 error in http request to "+TeslaEndpointUrl, err)
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "internal http request error"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "internal http request error"})
 		return
 	}
 
@@ -137,13 +148,9 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("[error] TeslaMateAPICarsCommandV1 error in second io.ReadAll:", err)
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "internal io reading error"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", RespAPIError{Error: "internal io reading error"})
 		return
 	}
-	json.Unmarshal([]byte(respBody), &jsonData)
-
-	// return jsonData
-	// use TeslaMateAPIHandleOtherResponse since we use the statusCode from Tesla API
-	TeslaMateAPIHandleOtherResponse(c, resp.StatusCode, "TeslaMateAPICarsCommandV1", jsonData)
+	TeslaMateAPIHandleOtherResponse(c, resp.StatusCode, "TeslaMateAPICarsCommandV1", TeslaUpstreamJSON(respBody))
 
 }

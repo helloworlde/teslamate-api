@@ -7,6 +7,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// TeslaMateAPICarsChargesV1 充电会话列表（对齐 Charges / Charging stats 等数据源）。
+// @Summary 充电记录列表
+// @Tags charges
+// @Produce json
+// @Param CarID path int true "车辆 ID" example(1)
+// @Param startDate query string false "开始时间 RFC3339"
+// @Param endDate query string false "结束时间 RFC3339"
+// @Param page query int false "页码" default(1)
+// @Param show query int false "每页条数" default(100)
+// @Success 200 {object} RespChargesList
+// @Router /api/v1/cars/{CarID}/charges [get]
 // TeslaMateAPICarsChargesV1 func
 func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
@@ -32,61 +43,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		return
 	}
 
-	// creating structs for /cars/<CarID>/charges
-	// Car struct - child of Data
-	type Car struct {
-		CarID   int        `json:"car_id"`   // smallint
-		CarName NullString `json:"car_name"` // text (nullable)
-	}
-	// BatteryDetails struct - child of Charges
-	type BatteryDetails struct {
-		StartBatteryLevel int `json:"start_battery_level"` // int
-		EndBatteryLevel   int `json:"end_battery_level"`   // int
-	}
-	// PreferredRange struct - child of Charges
-	type PreferredRange struct {
-		StartRange float64 `json:"start_range"` // float64
-		EndRange   float64 `json:"end_range"`   // float64
-	}
-	// Charges struct - child of Data
-	type Charges struct {
-		ChargeID          int            `json:"charge_id"`           // int
-		StartDate         string         `json:"start_date"`          // string
-		EndDate           string         `json:"end_date"`            // string
-		Address           string         `json:"address"`             // string
-		ChargeEnergyAdded float64        `json:"charge_energy_added"` // float64
-		ChargeEnergyUsed  float64        `json:"charge_energy_used"`  // float64
-		Cost              float64        `json:"cost"`                // float64
-		DurationMin       int            `json:"duration_min"`        // int
-		DurationStr       string         `json:"duration_str"`        // string
-		BatteryDetails    BatteryDetails `json:"battery_details"`     // BatteryDetails
-		RangeIdeal        PreferredRange `json:"range_ideal"`         // PreferredRange
-		RangeRated        PreferredRange `json:"range_rated"`         // PreferredRange
-		OutsideTempAvg    float64        `json:"outside_temp_avg"`    // float64
-		Odometer          float64        `json:"odometer"`            // float64
-		Latitude          float64        `json:"latitude"`            // float64
-		Longitude         float64        `json:"longitude"`           // float64
-	}
-	// TeslaMateUnits struct - child of Data
-	type TeslaMateUnits struct {
-		UnitsLength      string `json:"unit_of_length"`      // string
-		UnitsTemperature string `json:"unit_of_temperature"` // string
-	}
-	// Data struct - child of JSONData
-	type Data struct {
-		Car            Car            `json:"car"`
-		Charges        []Charges      `json:"charges"`
-		TeslaMateUnits TeslaMateUnits `json:"units"`
-	}
-	// JSONData struct - main
-	type JSONData struct {
-		Data Data `json:"data"`
-	}
-
 	// creating required vars
 	var (
 		CarName                       NullString
-		ChargesData                   []Charges
+		ChargesData                   []APIChargesRow
 		UnitsLength, UnitsTemperature string
 	)
 
@@ -168,7 +128,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	for rows.Next() {
 
 		// creating charge object based on struct
-		charge := Charges{}
+		charge := APIChargesRow{}
 
 		// scanning row and putting values into the charge
 		err = rows.Scan(
@@ -232,14 +192,14 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	//
 	// build the data-blob
-	jsonData := JSONData{
-		Data{
-			Car: Car{
+	jsonData := RespChargesList{
+		Data: RespChargesListData{
+			Car: APICarRef{
 				CarID:   CarID,
 				CarName: CarName,
 			},
 			Charges: ChargesData,
-			TeslaMateUnits: TeslaMateUnits{
+			TeslaMateUnits: APIUnitsLengthTemp{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,
 			},

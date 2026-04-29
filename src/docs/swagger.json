@@ -1,0 +1,4556 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "与 TeslaMate 采集数据对齐的 JSON API；看板对照见仓库 `执行计划.md`。",
+        "title": "TeslaMate API",
+        "contact": {},
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "根路径（服务运行提示）",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespHTTPRoot"
+                        }
+                    }
+                }
+            }
+        },
+        "/api": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "/api 根路径",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespHTTPRoot"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/healthz": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "存活探针",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespHealthz"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ping": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Ping",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespPing"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/readyz": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "就绪探针",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespReadyz"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "API v1 根路径",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespHTTPRoot"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "车辆列表或详情",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespCarsList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "车辆列表或详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID；省略则列出全部",
+                        "name": "CarID",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespCarsList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/battery-health": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "电池健康",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespBatteryHealth"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/charges": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "charges"
+                ],
+                "summary": "充电记录列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间 RFC3339",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 RFC3339",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "每页条数",
+                        "name": "show",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespChargesList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/charges/current": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "charges"
+                ],
+                "summary": "当前充电",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespChargeCurrent"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/charges/{ChargeID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "charges"
+                ],
+                "summary": "充电详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "充电过程 ID",
+                        "name": "ChargeID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespChargeDetail"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/command": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "commands"
+                ],
+                "summary": "车辆指令 / 唤醒",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "POST /command/*、/wake_up：Tesla API 原始 JSON",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/command/{Command}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "commands"
+                ],
+                "summary": "车辆指令 / 唤醒",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "指令名（POST /command/:Command）",
+                        "name": "Command",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "POST /command/*、/wake_up：Tesla API 原始 JSON",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/drives": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "drives"
+                ],
+                "summary": "行程列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间 RFC3339",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 RFC3339",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "最小距离",
+                        "name": "minDistance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "最大距离",
+                        "name": "maxDistance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "每页条数",
+                        "name": "show",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespDrivesList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/drives/{DriveID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "drives"
+                ],
+                "summary": "行程详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "行程 ID",
+                        "name": "DriveID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespDriveDetail"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/logging": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "commands"
+                ],
+                "summary": "TeslaMate 日志控制",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "PUT：TeslaMate 日志接口原始 JSON",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/logging/{Command}": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "commands"
+                ],
+                "summary": "TeslaMate 日志控制",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "子命令",
+                        "name": "Command",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "PUT：TeslaMate 日志接口原始 JSON",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/charge-level": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "充电/停车电量曲线（分桶）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 2,
+                        "description": "分桶分钟数",
+                        "name": "bucketMinutes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始（同时作 date_bin 对齐原点，同看板 $__from）",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsChargeLevel"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/charging-stats": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "充电统计汇总",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始（RFC3339），缺省为最近 30 天起点",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束（RFC3339），缺省为当前 UTC",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "最短充电时长（分钟），对应 min_duration",
+                        "name": "minDuration",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ideal|rated，用于 Ø Cost per 100 等派生",
+                        "name": "preferredRange",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsChargingStats"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/charging-stats/extra": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "充电统计扩展",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "最短分钟",
+                        "name": "minDuration",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsChargingStatsExtra"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/drive-stats": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "驾驶统计汇总",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ideal 或 rated，默认 settings",
+                        "name": "preferredRange",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsDriveStats"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/drive-stats/extra": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "驾驶统计扩展",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排除地址子串，逗号分隔",
+                        "name": "exclude",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsDriveStatsExtra"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/efficiency": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "效率指标",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ideal 或 rated",
+                        "name": "preferredRange",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsEfficiency"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/locations": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "地点与地址聚合",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址模糊过滤，对应 address_filter",
+                        "name": "addressFilter",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsLocations"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/mileage": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "里程曲线数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsMileage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/overview": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "总览 KPI 包",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsOverview"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/projected-range": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "表显续航/里程/外温聚合",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1 hour",
+                        "description": "如 5 minutes, 1 hour, 1 day",
+                        "name": "interval",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ideal|rated",
+                        "name": "preferredRange",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsProjectedRange"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/reports/dutch-tax": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "荷兰税务报表行程列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsDutchTax"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/states-analytics": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "状态分析",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsStatesAnalytics"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/statistics": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "周期统计（Statistics）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "day|week|month|year",
+                        "name": "period",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ideal|rated",
+                        "name": "preferredRange",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "IANA 时区，默认 TZ 环境变量",
+                        "name": "timezone",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1
+                        ],
+                        "type": "integer",
+                        "default": 0,
+                        "description": "refId D：0=事件流 1=positions 细粒度毛电耗",
+                        "name": "highPrecision",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsStatistics"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/timeline": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "活动时间线（简化）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "逗号分隔：driving,charging,updating；缺省为全部",
+                        "name": "actions",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "模糊匹配（版本号等）",
+                        "name": "textFilter",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsTimeline"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/trip": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "长途 Trip 汇总",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsTrip"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/vampire-drain": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "静置掉电（吸血鬼放电）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ideal 或 rated",
+                        "name": "preferredRange",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "default": 6,
+                        "description": "最小间隔（小时），对应 duration 变量",
+                        "name": "durationHours",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsVampireDrain"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/metrics/visited": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "Visited 看板数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束",
+                        "name": "endDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespMetricsVisited"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/positions": {
+            "get": {
+                "description": "查询 `positions` 表（时间序列与经纬度等）。支持 startDate、endDate 过滤 `date` 列，分页参数 page、show（单页最大 5000）。",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "车辆位置与采样点",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间 RFC3339",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 RFC3339",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码，从 1 开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 500,
+                        "description": "每页条数",
+                        "name": "show",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespPositionsList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/states": {
+            "get": {
+                "description": "查询 TeslaMate `states` 表（offline / asleep / online）。支持 startDate、endDate（RFC3339），默认按 start_date 降序。",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "车辆在线状态历史",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间 RFC3339",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 RFC3339",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码，从 1 开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "每页条数",
+                        "name": "show",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespStatesList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/status": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "实时状态（MQTT）",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.MQTTStatusResponse"
+                        }
+                    },
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/updates": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "软件更新记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespUpdatesList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cars/{CarID}/wake_up": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "commands"
+                ],
+                "summary": "车辆指令 / 唤醒",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "车辆 ID",
+                        "name": "CarID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "POST /command/*、/wake_up：Tesla API 原始 JSON",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespAPIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/database": {
+            "get": {
+                "description": "对齐 `database-info.json` 中与 PG 实例相关的面板。`includeTableStats=true` 时查询 `pg_statio_user_tables`；`includeTableRows=true` 时对每表 count（可能很慢）。",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboards"
+                ],
+                "summary": "数据库实例信息",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "是否包含表大小统计",
+                        "name": "includeTableStats",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "是否估算各表行数（慢）",
+                        "name": "includeTableRows",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespDatabase"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/globalsettings": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "settings"
+                ],
+                "summary": "全局设置",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.RespGlobalSettings"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.APIAccountTimestamps": {
+            "type": "object",
+            "properties": {
+                "inserted_at": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIBatteryHealth": {
+            "type": "object",
+            "properties": {
+                "battery_health_percentage": {
+                    "type": "number"
+                },
+                "current_capacity": {
+                    "type": "number"
+                },
+                "current_range": {
+                    "type": "number"
+                },
+                "max_capacity": {
+                    "type": "number"
+                },
+                "max_range": {
+                    "type": "number"
+                },
+                "rated_efficiency": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APICarRef": {
+            "type": "object",
+            "properties": {
+                "car_id": {
+                    "description": "CarID TeslaMate cars.id",
+                    "type": "integer"
+                },
+                "car_name": {
+                    "description": "CarName 车辆昵称，可为空",
+                    "type": "string"
+                }
+            }
+        },
+        "main.APICarsListCar": {
+            "type": "object",
+            "properties": {
+                "car_details": {
+                    "description": "CarDetails 车型与效率等",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.APICarsListCarDetails"
+                        }
+                    ]
+                },
+                "car_exterior": {
+                    "description": "CarExterior 外观",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.APICarsListCarExterior"
+                        }
+                    ]
+                },
+                "car_id": {
+                    "description": "CarID 车辆 ID",
+                    "type": "integer"
+                },
+                "car_settings": {
+                    "description": "CarSettings 车辆设置",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.APICarsListCarSettings"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Name 昵称",
+                    "type": "string"
+                },
+                "teslamate_details": {
+                    "description": "TeslaMateDetails 写入/更新时间",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.APICarsListTMDetails"
+                        }
+                    ]
+                },
+                "teslamate_stats": {
+                    "description": "TeslaMateStats 充电/驾驶/更新次数统计",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.APICarsListTMStats"
+                        }
+                    ]
+                }
+            }
+        },
+        "main.APICarsListCarDetails": {
+            "type": "object",
+            "properties": {
+                "efficiency": {
+                    "description": "Efficiency 效率系数",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.NullFloat64"
+                        }
+                    ]
+                },
+                "eid": {
+                    "description": "EID Tesla 车辆 entity id",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "Model 车型字符串",
+                    "type": "string"
+                },
+                "trim_badging": {
+                    "description": "TrimBadging 尾标",
+                    "type": "string"
+                },
+                "vid": {
+                    "description": "VID 车辆 id",
+                    "type": "integer"
+                },
+                "vin": {
+                    "description": "Vin 车架号",
+                    "type": "string"
+                }
+            }
+        },
+        "main.APICarsListCarExterior": {
+            "type": "object",
+            "properties": {
+                "exterior_color": {
+                    "description": "ExteriorColor 颜色",
+                    "type": "string"
+                },
+                "spoiler_type": {
+                    "description": "SpoilerType 尾翼",
+                    "type": "string"
+                },
+                "wheel_type": {
+                    "description": "WheelType 轮毂",
+                    "type": "string"
+                }
+            }
+        },
+        "main.APICarsListCarSettings": {
+            "type": "object",
+            "properties": {
+                "free_supercharging": {
+                    "description": "FreeSupercharging 免费超充",
+                    "type": "boolean"
+                },
+                "req_not_unlocked": {
+                    "description": "ReqNotUnlocked 要求未解锁",
+                    "type": "boolean"
+                },
+                "suspend_after_idle_min": {
+                    "description": "SuspendAfterIdleMin 空闲后挂起",
+                    "type": "integer"
+                },
+                "suspend_min": {
+                    "description": "SuspendMin 挂起分钟",
+                    "type": "integer"
+                },
+                "use_streaming_api": {
+                    "description": "UseStreamingAPI 流式 API",
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.APICarsListTMDetails": {
+            "type": "object",
+            "properties": {
+                "inserted_at": {
+                    "description": "InsertedAt 创建时间",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "main.APICarsListTMStats": {
+            "type": "object",
+            "properties": {
+                "total_charges": {
+                    "description": "TotalCharges 充电次数",
+                    "type": "integer"
+                },
+                "total_drives": {
+                    "description": "TotalDrives 驾驶次数",
+                    "type": "integer"
+                },
+                "total_updates": {
+                    "description": "TotalUpdates 更新次数",
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIChargeChargerStats": {
+            "type": "object",
+            "properties": {
+                "charger_actual_current": {
+                    "type": "integer"
+                },
+                "charger_phases": {
+                    "type": "integer"
+                },
+                "charger_pilot_current": {
+                    "type": "integer"
+                },
+                "charger_power": {
+                    "type": "integer"
+                },
+                "charger_voltage": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIChargeCurrent": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "battery_details": {
+                    "$ref": "#/definitions/main.APIChargeCurrentBattery"
+                },
+                "charge_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIChargeDetailRow"
+                    }
+                },
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "charge_id": {
+                    "type": "integer"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "duration_min": {
+                    "type": "integer"
+                },
+                "duration_str": {
+                    "type": "string"
+                },
+                "is_charging": {
+                    "type": "boolean"
+                },
+                "odometer": {
+                    "type": "number"
+                },
+                "outside_temp_avg": {
+                    "type": "number"
+                },
+                "rated_range": {
+                    "$ref": "#/definitions/main.APIChargeCurrentRatedRange"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIChargeCurrentBattery": {
+            "type": "object",
+            "properties": {
+                "current_battery_level": {
+                    "type": "integer"
+                },
+                "start_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIChargeCurrentRatedRange": {
+            "type": "object",
+            "properties": {
+                "added_range": {
+                    "type": "number"
+                },
+                "current_range": {
+                    "type": "number"
+                },
+                "start_range": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIChargeDetail": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "battery_details": {
+                    "$ref": "#/definitions/main.APIChargesBatteryLevels"
+                },
+                "charge_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIChargeDetailRowFixed"
+                    }
+                },
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "charge_energy_used": {
+                    "type": "number"
+                },
+                "charge_id": {
+                    "type": "integer"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "duration_min": {
+                    "type": "integer"
+                },
+                "duration_str": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "odometer": {
+                    "type": "number"
+                },
+                "outside_temp_avg": {
+                    "type": "number"
+                },
+                "range_ideal": {
+                    "$ref": "#/definitions/main.APIChargesRangeSpan"
+                },
+                "range_rated": {
+                    "$ref": "#/definitions/main.APIChargesRangeSpan"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIChargeDetailBatteryIdealRated": {
+            "type": "object",
+            "properties": {
+                "battery_heater": {
+                    "type": "boolean"
+                },
+                "battery_heater_no_power": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "battery_heater_on": {
+                    "type": "boolean"
+                },
+                "ideal_battery_range": {
+                    "type": "number"
+                },
+                "rated_battery_range": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIChargeDetailBatteryInfo": {
+            "type": "object",
+            "properties": {
+                "battery_heater": {
+                    "type": "boolean"
+                },
+                "battery_heater_no_power": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "battery_heater_on": {
+                    "type": "boolean"
+                },
+                "rated_battery_range": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIChargeDetailFastCharger": {
+            "type": "object",
+            "properties": {
+                "fast_charger_brand": {
+                    "type": "string"
+                },
+                "fast_charger_present": {
+                    "type": "boolean"
+                },
+                "fast_charger_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIChargeDetailRow": {
+            "type": "object",
+            "properties": {
+                "battery_info": {
+                    "$ref": "#/definitions/main.APIChargeDetailBatteryInfo"
+                },
+                "battery_level": {
+                    "type": "integer"
+                },
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "charger_details": {
+                    "$ref": "#/definitions/main.APIChargeChargerStats"
+                },
+                "conn_charge_cable": {},
+                "date": {
+                    "type": "string"
+                },
+                "detail_id": {
+                    "type": "integer"
+                },
+                "fast_charger_info": {
+                    "$ref": "#/definitions/main.APIChargeFastCharger"
+                },
+                "not_enough_power_to_heat": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "outside_temp": {
+                    "type": "number"
+                },
+                "usable_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIChargeDetailRowFixed": {
+            "type": "object",
+            "properties": {
+                "battery_info": {
+                    "$ref": "#/definitions/main.APIChargeDetailBatteryIdealRated"
+                },
+                "battery_level": {
+                    "type": "integer"
+                },
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "charger_details": {
+                    "$ref": "#/definitions/main.APIChargeChargerStats"
+                },
+                "conn_charge_cable": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "detail_id": {
+                    "type": "integer"
+                },
+                "fast_charger_info": {
+                    "$ref": "#/definitions/main.APIChargeDetailFastCharger"
+                },
+                "not_enough_power_to_heat": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "outside_temp": {
+                    "type": "number"
+                },
+                "usable_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIChargeFastCharger": {
+            "type": "object",
+            "properties": {
+                "fast_charger_brand": {
+                    "type": "string"
+                },
+                "fast_charger_present": {
+                    "type": "boolean"
+                },
+                "fast_charger_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIChargesBatteryLevels": {
+            "type": "object",
+            "properties": {
+                "end_battery_level": {
+                    "type": "integer"
+                },
+                "start_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIChargesRangeSpan": {
+            "type": "object",
+            "properties": {
+                "end_range": {
+                    "type": "number"
+                },
+                "start_range": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIChargesRow": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "battery_details": {
+                    "$ref": "#/definitions/main.APIChargesBatteryLevels"
+                },
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "charge_energy_used": {
+                    "type": "number"
+                },
+                "charge_id": {
+                    "type": "integer"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "duration_min": {
+                    "type": "integer"
+                },
+                "duration_str": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "odometer": {
+                    "type": "number"
+                },
+                "outside_temp_avg": {
+                    "type": "number"
+                },
+                "range_ideal": {
+                    "$ref": "#/definitions/main.APIChargesRangeSpan"
+                },
+                "range_rated": {
+                    "$ref": "#/definitions/main.APIChargesRangeSpan"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIDatabaseInfo": {
+            "type": "object",
+            "properties": {
+                "postgres_version": {
+                    "type": "string"
+                },
+                "shared_buffers_setting": {
+                    "type": "string"
+                },
+                "table_row_counts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIDatabaseTableRows"
+                    }
+                },
+                "table_row_counts_error": {
+                    "type": "string"
+                },
+                "table_sizes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIDatabaseTableSize"
+                    }
+                },
+                "timezone": {
+                    "type": "string"
+                },
+                "user_tables_total_bytes": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIDatabaseTableRows": {
+            "type": "object",
+            "properties": {
+                "rows": {
+                    "type": "integer"
+                },
+                "table": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIDatabaseTableSize": {
+            "type": "object",
+            "properties": {
+                "data_bytes": {
+                    "type": "integer"
+                },
+                "index_bytes": {
+                    "type": "integer"
+                },
+                "table": {
+                    "type": "string"
+                },
+                "total_bytes": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIDriveBatteryTrip": {
+            "type": "object",
+            "properties": {
+                "end_battery_level": {
+                    "type": "integer"
+                },
+                "end_usable_battery_level": {
+                    "type": "integer"
+                },
+                "is_sufficiently_precise": {
+                    "type": "boolean"
+                },
+                "reduced_range": {
+                    "type": "boolean"
+                },
+                "start_battery_level": {
+                    "type": "integer"
+                },
+                "start_usable_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIDriveDetail": {
+            "type": "object",
+            "properties": {
+                "battery_details": {
+                    "$ref": "#/definitions/main.APIDriveBatteryTrip"
+                },
+                "consumption_net": {
+                    "type": "number"
+                },
+                "drive_details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIDriveDetailPoint"
+                    }
+                },
+                "drive_id": {
+                    "type": "integer"
+                },
+                "duration_min": {
+                    "type": "integer"
+                },
+                "duration_str": {
+                    "type": "string"
+                },
+                "end_address": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "energy_consumed_net": {
+                    "type": "number"
+                },
+                "inside_temp_avg": {
+                    "type": "number"
+                },
+                "odometer_details": {
+                    "$ref": "#/definitions/main.APIOdometerTrip"
+                },
+                "outside_temp_avg": {
+                    "type": "number"
+                },
+                "power_max": {
+                    "type": "integer"
+                },
+                "power_min": {
+                    "type": "integer"
+                },
+                "range_ideal": {
+                    "$ref": "#/definitions/main.APIRangeTrip"
+                },
+                "range_rated": {
+                    "$ref": "#/definitions/main.APIRangeTrip"
+                },
+                "speed_avg": {
+                    "type": "number"
+                },
+                "speed_max": {
+                    "type": "integer"
+                },
+                "start_address": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIDriveDetailBattery": {
+            "type": "object",
+            "properties": {
+                "battery_heater": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "battery_heater_no_power": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "battery_heater_on": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "est_battery_range": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "ideal_battery_range": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "rated_battery_range": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                }
+            }
+        },
+        "main.APIDriveDetailClimate": {
+            "type": "object",
+            "properties": {
+                "driver_temp_setting": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "fan_status": {
+                    "$ref": "#/definitions/main.NullInt64"
+                },
+                "inside_temp": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "is_climate_on": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "is_front_defroster_on": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "is_rear_defroster_on": {
+                    "$ref": "#/definitions/main.NullBool"
+                },
+                "outside_temp": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "passenger_temp_setting": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                }
+            }
+        },
+        "main.APIDriveDetailPoint": {
+            "type": "object",
+            "properties": {
+                "battery_info": {
+                    "$ref": "#/definitions/main.APIDriveDetailBattery"
+                },
+                "battery_level": {
+                    "type": "integer"
+                },
+                "climate_info": {
+                    "$ref": "#/definitions/main.APIDriveDetailClimate"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "detail_id": {
+                    "type": "integer"
+                },
+                "elevation": {
+                    "$ref": "#/definitions/main.NullInt64"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "odometer": {
+                    "type": "number"
+                },
+                "power": {
+                    "type": "integer"
+                },
+                "speed": {
+                    "type": "integer"
+                },
+                "usable_battery_level": {
+                    "$ref": "#/definitions/main.NullInt64"
+                }
+            }
+        },
+        "main.APIDriveListRow": {
+            "type": "object",
+            "properties": {
+                "battery_details": {
+                    "$ref": "#/definitions/main.APIDriveBatteryTrip"
+                },
+                "consumption_net": {
+                    "type": "number"
+                },
+                "drive_id": {
+                    "type": "integer"
+                },
+                "duration_min": {
+                    "type": "integer"
+                },
+                "duration_str": {
+                    "type": "string"
+                },
+                "end_address": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "energy_consumed_net": {
+                    "type": "number"
+                },
+                "inside_temp_avg": {
+                    "type": "number"
+                },
+                "odometer_details": {
+                    "$ref": "#/definitions/main.APIOdometerTrip"
+                },
+                "outside_temp_avg": {
+                    "type": "number"
+                },
+                "power_max": {
+                    "type": "integer"
+                },
+                "power_min": {
+                    "type": "integer"
+                },
+                "range_ideal": {
+                    "$ref": "#/definitions/main.APIRangeTrip"
+                },
+                "range_rated": {
+                    "$ref": "#/definitions/main.APIRangeTrip"
+                },
+                "speed_avg": {
+                    "type": "number"
+                },
+                "speed_max": {
+                    "type": "integer"
+                },
+                "start_address": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIGlobalGUI": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string"
+                },
+                "preferred_range": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIGlobalSettings": {
+            "type": "object",
+            "properties": {
+                "account_info": {
+                    "$ref": "#/definitions/main.APIAccountTimestamps"
+                },
+                "setting_id": {
+                    "type": "integer"
+                },
+                "teslamate_units": {
+                    "$ref": "#/definitions/main.APIGlobalUnits"
+                },
+                "teslamate_urls": {
+                    "$ref": "#/definitions/main.APIGlobalURLs"
+                },
+                "teslamate_webgui": {
+                    "$ref": "#/definitions/main.APIGlobalGUI"
+                }
+            }
+        },
+        "main.APIGlobalURLs": {
+            "type": "object",
+            "properties": {
+                "base_url": {
+                    "type": "string"
+                },
+                "grafana_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIGlobalUnits": {
+            "type": "object",
+            "properties": {
+                "unit_of_length": {
+                    "type": "string"
+                },
+                "unit_of_temperature": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsAddressLine": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "neighbourhood": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsChargeDeltaPoint": {
+            "type": "object",
+            "properties": {
+                "end_battery_level": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "start_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIMetricsChargeLevelData": {
+            "type": "object",
+            "properties": {
+                "bucket_minutes": {
+                    "type": "integer"
+                },
+                "series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsChargeLevelPoint"
+                    }
+                },
+                "thresholds": {
+                    "$ref": "#/definitions/main.APIMetricsChargeLevelThresholds"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsChargeLevelPoint": {
+            "type": "object",
+            "properties": {
+                "battery_level": {
+                    "type": "number"
+                },
+                "bucket_time": {
+                    "type": "string"
+                },
+                "usable_battery_level": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsChargeLevelThresholds": {
+            "type": "object",
+            "properties": {
+                "lower": {
+                    "type": "integer"
+                },
+                "upper": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIMetricsChargingGeo": {
+            "type": "object",
+            "properties": {
+                "charges": {
+                    "type": "integer"
+                },
+                "chg_total": {
+                    "type": "number"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "loc_nm": {
+                    "type": "string"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "pct": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsChargingStatsData": {
+            "type": "object",
+            "properties": {
+                "charge_count": {
+                    "type": "integer"
+                },
+                "cost_per_100_length_currency": {
+                    "type": "number"
+                },
+                "cost_per_kwh": {
+                    "type": "number"
+                },
+                "cost_per_kwh_ac": {
+                    "type": "number"
+                },
+                "cost_per_kwh_dc": {
+                    "type": "number"
+                },
+                "min_duration_min": {
+                    "type": "integer"
+                },
+                "suc_charging_cost": {
+                    "type": "number"
+                },
+                "total_cost": {
+                    "type": "number"
+                },
+                "total_energy_added_kwh": {
+                    "type": "number"
+                },
+                "unit_of_length_setting": {
+                    "type": "string"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsChargingStatsExtraData": {
+            "type": "object",
+            "properties": {
+                "charge_delta_series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsChargeDeltaPoint"
+                    }
+                },
+                "charging_geo_by_kwh": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsChargingGeo"
+                    }
+                },
+                "min_duration_min": {
+                    "type": "integer"
+                },
+                "top_stations_by_cost": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStationCost"
+                    }
+                },
+                "top_stations_by_kwh": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStationEnergy"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsCityCount": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIMetricsDestCount": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "visited": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.APIMetricsDriveStatsData": {
+            "type": "object",
+            "properties": {
+                "avg_distance_logged_per_day": {
+                    "type": "number"
+                },
+                "avg_energy_net_kwh_per_day": {
+                    "type": "number"
+                },
+                "drive_count": {
+                    "type": "integer"
+                },
+                "energy_consumed_kwh_net": {
+                    "type": "number"
+                },
+                "extrapolated_monthly_mileage": {
+                    "type": "number"
+                },
+                "extrapolated_yearly_mileage": {
+                    "type": "number"
+                },
+                "max_speed_converted": {
+                    "type": "number"
+                },
+                "median_distance_converted": {
+                    "type": "number"
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "total_distance_km_raw": {
+                    "type": "number"
+                },
+                "unit_of_length": {
+                    "type": "string"
+                },
+                "window_days": {
+                    "type": "number"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsDriveStatsExtraData": {
+            "type": "object",
+            "properties": {
+                "speed_histogram": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsSpeedBin"
+                    }
+                },
+                "top_destinations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsDestCount"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsDutchTaxData": {
+            "type": "object",
+            "properties": {
+                "drives": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsDutchTaxDrive"
+                    }
+                },
+                "unit_of_length": {
+                    "type": "string"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsDutchTaxDrive": {
+            "type": "object",
+            "properties": {
+                "distance": {
+                    "type": "number"
+                },
+                "drive_id": {
+                    "type": "integer"
+                },
+                "duration_min": {
+                    "type": "integer"
+                },
+                "end_address": {
+                    "type": "string"
+                },
+                "end_date_ts": {
+                    "type": "number"
+                },
+                "end_odometer": {
+                    "type": "number"
+                },
+                "start_address": {
+                    "type": "string"
+                },
+                "start_date_ts": {
+                    "type": "number"
+                },
+                "start_odometer": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsEfficiencyData": {
+            "type": "object",
+            "properties": {
+                "consumption_net_wh_per_unit": {
+                    "type": "number"
+                },
+                "logged_distance_converted": {
+                    "type": "number"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "unit_of_length": {
+                    "type": "string"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsLocationsData": {
+            "type": "object",
+            "properties": {
+                "address_count": {
+                    "type": "integer"
+                },
+                "address_filter": {
+                    "type": "string"
+                },
+                "addresses_sample": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsAddressLine"
+                    }
+                },
+                "distinct_cities": {
+                    "type": "integer"
+                },
+                "distinct_countries": {
+                    "type": "integer"
+                },
+                "distinct_states": {
+                    "type": "integer"
+                },
+                "top_cities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsCityCount"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsMileageData": {
+            "type": "object",
+            "properties": {
+                "series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsMileagePoint"
+                    }
+                },
+                "unit_of_length": {
+                    "type": "string"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsMileagePoint": {
+            "type": "object",
+            "properties": {
+                "mileage": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsOverviewData": {
+            "type": "object",
+            "properties": {
+                "battery_level_latest": {
+                    "type": "integer"
+                },
+                "consumption_net_wh_per_length": {
+                    "type": "number"
+                },
+                "firmware_version": {
+                    "type": "string"
+                },
+                "odometer_latest": {
+                    "type": "number"
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "total_distance_logged": {
+                    "type": "number"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsProjBattLevel": {
+            "type": "object",
+            "properties": {
+                "battery_level": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "usable_battery_level": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsProjMileageRow": {
+            "type": "object",
+            "properties": {
+                "mileage": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsProjRangeRow": {
+            "type": "object",
+            "properties": {
+                "projected_range_per_soc": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsProjTempRow": {
+            "type": "object",
+            "properties": {
+                "outside_temp": {
+                    "type": "number"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsProjectedRangeData": {
+            "type": "object",
+            "properties": {
+                "battery_level": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsProjBattLevel"
+                    }
+                },
+                "interval": {
+                    "type": "string"
+                },
+                "mileage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsProjMileageRow"
+                    }
+                },
+                "outdoor_temperature": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsProjTempRow"
+                    }
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "projected_range_curve": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsProjRangeRow"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsSpeedBin": {
+            "type": "object",
+            "properties": {
+                "seconds_elapsed": {
+                    "type": "number"
+                },
+                "speed_bin": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsStatesAnalyticsData": {
+            "type": "object",
+            "properties": {
+                "parked_fraction": {
+                    "type": "number"
+                },
+                "state_legend": {
+                    "type": "string"
+                },
+                "state_timeline_numeric": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStatesNumericPoint"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsStatesNumericPoint": {
+            "type": "object",
+            "properties": {
+                "state": {
+                    "type": "number"
+                },
+                "t_ms": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsStationCost": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsStationEnergy": {
+            "type": "object",
+            "properties": {
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsStatisticsChargePeriodRow": {
+            "type": "object",
+            "properties": {
+                "avg_energy_charged_kwh": {
+                    "type": "number"
+                },
+                "cnt_charges": {
+                    "type": "number"
+                },
+                "cost_charges": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "date_from": {
+                    "type": "number"
+                },
+                "date_to": {
+                    "type": "number"
+                },
+                "display": {
+                    "type": "string"
+                },
+                "sum_energy_added_kwh": {
+                    "type": "number"
+                },
+                "sum_energy_used_kwh": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsStatisticsConsumptionGrossRow": {
+            "type": "object",
+            "properties": {
+                "consumption_gross": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "date_from": {
+                    "type": "number"
+                },
+                "date_to": {
+                    "type": "number"
+                },
+                "display": {
+                    "type": "string"
+                },
+                "is_incomplete": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.APIMetricsStatisticsConsumptionNetRow": {
+            "type": "object",
+            "properties": {
+                "consumption_net": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "date_from": {
+                    "type": "number"
+                },
+                "date_to": {
+                    "type": "number"
+                },
+                "display": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsStatisticsData": {
+            "type": "object",
+            "properties": {
+                "charges_per_period": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStatisticsChargePeriodRow"
+                    }
+                },
+                "consumption_gross_period": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStatisticsConsumptionGrossRow"
+                    }
+                },
+                "consumption_net_period": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStatisticsConsumptionNetRow"
+                    }
+                },
+                "drives_per_period": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsStatisticsDrivePeriodRow"
+                    }
+                },
+                "high_precision": {
+                    "type": "integer"
+                },
+                "period": {
+                    "type": "string"
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "timezone": {
+                    "type": "string"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsStatisticsDrivePeriodRow": {
+            "type": "object",
+            "properties": {
+                "avg_outside_temp": {
+                    "type": "number"
+                },
+                "cnt": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "date_from": {
+                    "type": "number"
+                },
+                "date_to": {
+                    "type": "number"
+                },
+                "display": {
+                    "type": "string"
+                },
+                "efficiency": {
+                    "type": "number"
+                },
+                "sum_distance": {
+                    "type": "number"
+                },
+                "sum_duration_h": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsTimelineData": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsTimelineEvent"
+                    }
+                },
+                "note": {
+                    "type": "string"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsTimelineEvent": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "ref_id": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsTripData": {
+            "type": "object",
+            "properties": {
+                "avg_speed_by_length_unit": {
+                    "type": "number"
+                },
+                "charge_duration_hours": {
+                    "type": "number"
+                },
+                "consumption_net_wh_per_unit": {
+                    "type": "number"
+                },
+                "drive_duration_hours": {
+                    "type": "number"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "parking_hours_est": {
+                    "type": "number"
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "total_charging_cost": {
+                    "type": "number"
+                },
+                "window_duration_hours": {
+                    "type": "number"
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsVampireDrainData": {
+            "type": "object",
+            "properties": {
+                "columns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "duration_hours_min": {
+                    "type": "number"
+                },
+                "preferred_range": {
+                    "type": "string"
+                },
+                "rows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsVampireRow"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsVampireRow": {
+            "type": "object",
+            "properties": {
+                "avg_power": {
+                    "type": "number"
+                },
+                "consumption": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "end_date_ts": {
+                    "type": "number"
+                },
+                "has_reduced_range": {
+                    "type": "integer"
+                },
+                "range_diff": {
+                    "type": "number"
+                },
+                "range_lost_per_hour": {
+                    "type": "number"
+                },
+                "soc_diff": {
+                    "type": "number"
+                },
+                "standby": {
+                    "type": "number"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "start_date_ts": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIMetricsVisitedData": {
+            "type": "object",
+            "properties": {
+                "charging_efficiency_pct": {
+                    "type": "number"
+                },
+                "mileage_label": {
+                    "type": "string"
+                },
+                "total_charging_cost": {
+                    "type": "number"
+                },
+                "total_energy_added": {
+                    "type": "number"
+                },
+                "total_energy_used": {
+                    "type": "number"
+                },
+                "track_sample": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIMetricsVisitedTrackPoint"
+                    }
+                },
+                "window_end_utc": {
+                    "type": "string"
+                },
+                "window_start_utc": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIMetricsVisitedTrackPoint": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
+                "t_ms": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIOdometerTrip": {
+            "type": "object",
+            "properties": {
+                "odometer_distance": {
+                    "type": "number"
+                },
+                "odometer_end": {
+                    "type": "number"
+                },
+                "odometer_start": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIPositionRow": {
+            "type": "object",
+            "properties": {
+                "battery_level": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "driver_temp_setting": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ideal_battery_range_km": {
+                    "type": "number"
+                },
+                "inside_temp": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "odometer": {
+                    "type": "number"
+                },
+                "outside_temp": {
+                    "$ref": "#/definitions/main.NullFloat64"
+                },
+                "power": {
+                    "type": "integer"
+                },
+                "rated_battery_range_km": {
+                    "type": "number"
+                },
+                "speed": {
+                    "type": "integer"
+                },
+                "usable_battery_level": {
+                    "$ref": "#/definitions/main.NullInt64"
+                }
+            }
+        },
+        "main.APIRangeTrip": {
+            "type": "object",
+            "properties": {
+                "end_range": {
+                    "type": "number"
+                },
+                "range_diff": {
+                    "type": "number"
+                },
+                "start_range": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.APIStateRow": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIUnitsLengthTemp": {
+            "type": "object",
+            "properties": {
+                "unit_of_length": {
+                    "description": "UnitsLength km 或 mi",
+                    "type": "string"
+                },
+                "unit_of_temperature": {
+                    "description": "UnitsTemperature C 或 F",
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIUnitsLengthTempPressure": {
+            "type": "object",
+            "properties": {
+                "unit_of_length": {
+                    "description": "UnitsLength km 或 mi",
+                    "type": "string"
+                },
+                "unit_of_pressure": {
+                    "description": "UnitsPressure bar 或 psi",
+                    "type": "string"
+                },
+                "unit_of_temperature": {
+                    "description": "UnitsTemperature C 或 F",
+                    "type": "string"
+                }
+            }
+        },
+        "main.APIUpdateRow": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "update_id": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.MQTTStatusActiveRoute": {
+            "type": "object",
+            "properties": {
+                "destination": {
+                    "type": "string"
+                },
+                "distance_to_arrival": {
+                    "type": "number"
+                },
+                "energy_at_arrival": {
+                    "type": "integer"
+                },
+                "location": {
+                    "$ref": "#/definitions/main.MQTTStatusGeoPoint"
+                },
+                "minutes_to_arrival": {
+                    "type": "number"
+                },
+                "traffic_minutes_delay": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.MQTTStatusBatterySnap": {
+            "type": "object",
+            "properties": {
+                "battery_level": {
+                    "type": "integer"
+                },
+                "est_battery_range": {
+                    "type": "number"
+                },
+                "ideal_battery_range": {
+                    "type": "number"
+                },
+                "rated_battery_range": {
+                    "type": "number"
+                },
+                "usable_battery_level": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.MQTTStatusCharging": {
+            "type": "object",
+            "properties": {
+                "charge_current_request": {
+                    "type": "integer"
+                },
+                "charge_current_request_max": {
+                    "type": "integer"
+                },
+                "charge_energy_added": {
+                    "type": "number"
+                },
+                "charge_limit_soc": {
+                    "type": "integer"
+                },
+                "charge_port_door_open": {
+                    "type": "boolean"
+                },
+                "charger_actual_current": {
+                    "type": "number"
+                },
+                "charger_phases": {
+                    "type": "integer"
+                },
+                "charger_power": {
+                    "type": "number"
+                },
+                "charger_voltage": {
+                    "type": "integer"
+                },
+                "charging_state": {
+                    "type": "string"
+                },
+                "plugged_in": {
+                    "type": "boolean"
+                },
+                "scheduled_charging_start_time": {
+                    "type": "string"
+                },
+                "time_to_full_charge": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.MQTTStatusClimate": {
+            "type": "object",
+            "properties": {
+                "climate_keeper_mode": {
+                    "type": "string"
+                },
+                "inside_temp": {
+                    "type": "number"
+                },
+                "is_climate_on": {
+                    "type": "boolean"
+                },
+                "is_preconditioning": {
+                    "type": "boolean"
+                },
+                "outside_temp": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.MQTTStatusDriving": {
+            "type": "object",
+            "properties": {
+                "active_route": {
+                    "$ref": "#/definitions/main.MQTTStatusActiveRoute"
+                },
+                "active_route_destination": {
+                    "type": "string"
+                },
+                "active_route_latitude": {
+                    "type": "number"
+                },
+                "active_route_longitude": {
+                    "type": "number"
+                },
+                "elevation": {
+                    "type": "integer"
+                },
+                "heading": {
+                    "type": "integer"
+                },
+                "power": {
+                    "type": "integer"
+                },
+                "shift_state": {
+                    "type": "string"
+                },
+                "speed": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.MQTTStatusExterior": {
+            "type": "object",
+            "properties": {
+                "exterior_color": {
+                    "type": "string"
+                },
+                "spoiler_type": {
+                    "type": "string"
+                },
+                "wheel_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.MQTTStatusGeoPoint": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.MQTTStatusGeodata": {
+            "type": "object",
+            "properties": {
+                "geofence": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "location": {
+                    "$ref": "#/definitions/main.MQTTStatusGeoPoint"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        },
+        "main.MQTTStatusPayload": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "status": {
+                    "$ref": "#/definitions/main.MQTTStatusSnapshot"
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTempPressure"
+                }
+            }
+        },
+        "main.MQTTStatusResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.MQTTStatusPayload"
+                }
+            }
+        },
+        "main.MQTTStatusSnapshot": {
+            "type": "object",
+            "properties": {
+                "battery_details": {
+                    "$ref": "#/definitions/main.MQTTStatusBatterySnap"
+                },
+                "car_details": {
+                    "$ref": "#/definitions/main.MQTTStatusVehicleModel"
+                },
+                "car_exterior": {
+                    "$ref": "#/definitions/main.MQTTStatusExterior"
+                },
+                "car_geodata": {
+                    "$ref": "#/definitions/main.MQTTStatusGeodata"
+                },
+                "car_status": {
+                    "$ref": "#/definitions/main.MQTTStatusVehicleState"
+                },
+                "car_versions": {
+                    "$ref": "#/definitions/main.MQTTStatusSoftwareVersions"
+                },
+                "charging_details": {
+                    "$ref": "#/definitions/main.MQTTStatusCharging"
+                },
+                "climate_details": {
+                    "$ref": "#/definitions/main.MQTTStatusClimate"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "driving_details": {
+                    "$ref": "#/definitions/main.MQTTStatusDriving"
+                },
+                "odometer": {
+                    "type": "number"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "state_since": {
+                    "type": "string"
+                },
+                "tpms_details": {
+                    "$ref": "#/definitions/main.MQTTStatusTPMS"
+                }
+            }
+        },
+        "main.MQTTStatusSoftwareVersions": {
+            "type": "object",
+            "properties": {
+                "update_available": {
+                    "type": "boolean"
+                },
+                "update_version": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.MQTTStatusTPMS": {
+            "type": "object",
+            "properties": {
+                "tpms_pressure_fl": {
+                    "type": "number"
+                },
+                "tpms_pressure_fr": {
+                    "type": "number"
+                },
+                "tpms_pressure_rl": {
+                    "type": "number"
+                },
+                "tpms_pressure_rr": {
+                    "type": "number"
+                },
+                "tpms_soft_warning_fl": {
+                    "type": "boolean"
+                },
+                "tpms_soft_warning_fr": {
+                    "type": "boolean"
+                },
+                "tpms_soft_warning_rl": {
+                    "type": "boolean"
+                },
+                "tpms_soft_warning_rr": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.MQTTStatusVehicleModel": {
+            "type": "object",
+            "properties": {
+                "model": {
+                    "type": "string"
+                },
+                "trim_badging": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.MQTTStatusVehicleState": {
+            "type": "object",
+            "properties": {
+                "center_display_state": {
+                    "type": "integer"
+                },
+                "doors_open": {
+                    "type": "boolean"
+                },
+                "driver_front_door_open": {
+                    "type": "boolean"
+                },
+                "driver_rear_door_open": {
+                    "type": "boolean"
+                },
+                "frunk_open": {
+                    "type": "boolean"
+                },
+                "healthy": {
+                    "type": "boolean"
+                },
+                "is_user_present": {
+                    "type": "boolean"
+                },
+                "locked": {
+                    "type": "boolean"
+                },
+                "passenger_front_door_open": {
+                    "type": "boolean"
+                },
+                "passenger_rear_door_open": {
+                    "type": "boolean"
+                },
+                "sentry_mode": {
+                    "type": "boolean"
+                },
+                "trunk_open": {
+                    "type": "boolean"
+                },
+                "windows_open": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.NullBool": {
+            "type": "object",
+            "properties": {
+                "bool": {
+                    "type": "boolean"
+                },
+                "valid": {
+                    "description": "Valid is true if Bool is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.NullFloat64": {
+            "type": "object",
+            "properties": {
+                "float64": {
+                    "type": "number"
+                },
+                "valid": {
+                    "description": "Valid is true if Float64 is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.NullInt64": {
+            "type": "object",
+            "properties": {
+                "int64": {
+                    "type": "integer"
+                },
+                "valid": {
+                    "description": "Valid is true if Int64 is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "main.RespAPIError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "description": "Error 错误说明",
+                    "type": "string"
+                }
+            }
+        },
+        "main.RespBatteryHealth": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespBatteryHealthData"
+                }
+            }
+        },
+        "main.RespBatteryHealthData": {
+            "type": "object",
+            "properties": {
+                "battery_health": {
+                    "$ref": "#/definitions/main.APIBatteryHealth"
+                },
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespCarsList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Data 车辆列表或单车",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/main.RespCarsListData"
+                        }
+                    ]
+                }
+            }
+        },
+        "main.RespCarsListData": {
+            "type": "object",
+            "properties": {
+                "cars": {
+                    "description": "Cars 车辆数组",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APICarsListCar"
+                    }
+                }
+            }
+        },
+        "main.RespChargeCurrent": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespChargeCurrentData"
+                }
+            }
+        },
+        "main.RespChargeCurrentData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "charge": {
+                    "$ref": "#/definitions/main.APIChargeCurrent"
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespChargeDetail": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespChargeDetailData"
+                }
+            }
+        },
+        "main.RespChargeDetailData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "charge": {
+                    "$ref": "#/definitions/main.APIChargeDetail"
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespChargesList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespChargesListData"
+                }
+            }
+        },
+        "main.RespChargesListData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "charges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIChargesRow"
+                    }
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespDatabase": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIDatabaseInfo"
+                }
+            }
+        },
+        "main.RespDriveDetail": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespDriveDetailData"
+                }
+            }
+        },
+        "main.RespDriveDetailData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "drive": {
+                    "$ref": "#/definitions/main.APIDriveDetail"
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespDrivesList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespDrivesListData"
+                }
+            }
+        },
+        "main.RespDrivesListData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "drives": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIDriveListRow"
+                    }
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespEnabledCommandNames": {
+            "type": "object",
+            "properties": {
+                "enabled_commands": {
+                    "description": "EnabledCommands 当前环境允许执行的指令名",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "main.RespGlobalSettings": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespGlobalSettingsData"
+                }
+            }
+        },
+        "main.RespGlobalSettingsData": {
+            "type": "object",
+            "properties": {
+                "settings": {
+                    "$ref": "#/definitions/main.APIGlobalSettings"
+                }
+            }
+        },
+        "main.RespHTTPRoot": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "Message 运行提示",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path 当前路径",
+                    "type": "string"
+                }
+            }
+        },
+        "main.RespHealthz": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status HTTP 状态文本",
+                    "type": "string"
+                }
+            }
+        },
+        "main.RespMetricsChargeLevel": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsChargeLevelData"
+                }
+            }
+        },
+        "main.RespMetricsChargingStats": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsChargingStatsData"
+                }
+            }
+        },
+        "main.RespMetricsChargingStatsExtra": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsChargingStatsExtraData"
+                }
+            }
+        },
+        "main.RespMetricsDriveStats": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsDriveStatsData"
+                }
+            }
+        },
+        "main.RespMetricsDriveStatsExtra": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsDriveStatsExtraData"
+                }
+            }
+        },
+        "main.RespMetricsDutchTax": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsDutchTaxData"
+                }
+            }
+        },
+        "main.RespMetricsEfficiency": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsEfficiencyData"
+                }
+            }
+        },
+        "main.RespMetricsLocations": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsLocationsData"
+                }
+            }
+        },
+        "main.RespMetricsMileage": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsMileageData"
+                }
+            }
+        },
+        "main.RespMetricsOverview": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsOverviewData"
+                }
+            }
+        },
+        "main.RespMetricsProjectedRange": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsProjectedRangeData"
+                }
+            }
+        },
+        "main.RespMetricsStatesAnalytics": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsStatesAnalyticsData"
+                }
+            }
+        },
+        "main.RespMetricsStatistics": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsStatisticsData"
+                }
+            }
+        },
+        "main.RespMetricsTimeline": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsTimelineData"
+                }
+            }
+        },
+        "main.RespMetricsTrip": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsTripData"
+                }
+            }
+        },
+        "main.RespMetricsVampireDrain": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsVampireDrainData"
+                }
+            }
+        },
+        "main.RespMetricsVisited": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.APIMetricsVisitedData"
+                }
+            }
+        },
+        "main.RespPing": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "Message 固定为 pong",
+                    "type": "string"
+                }
+            }
+        },
+        "main.RespPositionsData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "positions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIPositionRow"
+                    }
+                },
+                "units": {
+                    "$ref": "#/definitions/main.APIUnitsLengthTemp"
+                }
+            }
+        },
+        "main.RespPositionsList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespPositionsData"
+                }
+            }
+        },
+        "main.RespReadyz": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status HTTP 状态文本",
+                    "type": "string"
+                }
+            }
+        },
+        "main.RespStatesData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "states": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIStateRow"
+                    }
+                }
+            }
+        },
+        "main.RespStatesList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespStatesData"
+                }
+            }
+        },
+        "main.RespUpdatesData": {
+            "type": "object",
+            "properties": {
+                "car": {
+                    "$ref": "#/definitions/main.APICarRef"
+                },
+                "updates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.APIUpdateRow"
+                    }
+                }
+            }
+        },
+        "main.RespUpdatesList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/main.RespUpdatesData"
+                }
+            }
+        }
+    }
+}
