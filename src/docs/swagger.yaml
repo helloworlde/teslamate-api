@@ -1687,14 +1687,6 @@ definitions:
       units:
         $ref: '#/definitions/main.APIUnitsLengthTemp'
     type: object
-  main.RespEnabledCommandNames:
-    properties:
-      enabled_commands:
-        description: EnabledCommands 当前环境允许执行的指令名
-        items:
-          type: string
-        type: array
-    type: object
   main.RespGlobalSettings:
     properties:
       data:
@@ -2075,68 +2067,6 @@ paths:
       summary: 当前充电
       tags:
       - charges
-  /api/v1/cars/{CarID}/command:
-    get:
-      parameters:
-      - description: 车辆 ID
-        example: 1
-        in: path
-        name: CarID
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: POST /command/*、/wake_up：Tesla API 原始 JSON
-          schema:
-            items:
-              type: integer
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/main.RespAPIError'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/main.RespAPIError'
-      summary: 车辆指令 / 唤醒
-      tags:
-      - commands
-  /api/v1/cars/{CarID}/command/{Command}:
-    post:
-      parameters:
-      - description: 车辆 ID
-        example: 1
-        in: path
-        name: CarID
-        required: true
-        type: integer
-      - description: 指令名（POST /command/:Command）
-        in: path
-        name: Command
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: POST /command/*、/wake_up：Tesla API 原始 JSON
-          schema:
-            items:
-              type: integer
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/main.RespAPIError'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/main.RespAPIError'
-      summary: 车辆指令 / 唤醒
-      tags:
-      - commands
   /api/v1/cars/{CarID}/drives:
     get:
       parameters:
@@ -2206,53 +2136,6 @@ paths:
       summary: 行程详情
       tags:
       - drives
-  /api/v1/cars/{CarID}/logging:
-    get:
-      parameters:
-      - description: 车辆 ID
-        example: 1
-        in: path
-        name: CarID
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: PUT：TeslaMate 日志接口原始 JSON
-          schema:
-            items:
-              type: integer
-            type: array
-      summary: TeslaMate 日志控制
-      tags:
-      - commands
-  /api/v1/cars/{CarID}/logging/{Command}:
-    put:
-      parameters:
-      - description: 车辆 ID
-        example: 1
-        in: path
-        name: CarID
-        required: true
-        type: integer
-      - description: 子命令
-        in: path
-        name: Command
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: PUT：TeslaMate 日志接口原始 JSON
-          schema:
-            items:
-              type: integer
-            type: array
-      summary: TeslaMate 日志控制
-      tags:
-      - commands
   /api/v1/cars/{CarID}/metrics/charge-level:
     get:
       parameters:
@@ -2914,35 +2797,6 @@ paths:
       summary: 软件更新记录
       tags:
       - cars
-  /api/v1/cars/{CarID}/wake_up:
-    post:
-      parameters:
-      - description: 车辆 ID
-        example: 1
-        in: path
-        name: CarID
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: POST /command/*、/wake_up：Tesla API 原始 JSON
-          schema:
-            items:
-              type: integer
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/main.RespAPIError'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/main.RespAPIError'
-      summary: 车辆指令 / 唤醒
-      tags:
-      - commands
   /api/v1/database:
     get:
       description: 对齐 `database-info.json` 中与 PG 实例相关的面板。`includeTableStats=true`

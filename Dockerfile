@@ -7,16 +7,16 @@ ARG apiVersion=unknown
 # create and set workingfolder
 WORKDIR /go/src/
 
-# copy go mod files and sourcecode
+# 与仓库布局一致：go.mod 在根目录，可执行包在 src/（含子包 src/docs，import 为 .../teslamateapi/src/docs）
 COPY go.mod go.sum ./
-COPY src/ .
+COPY src ./src
 
-# download go mods and compile the program
+# download go mods and compile the program（./src 为 package main；勿用 ./src/... 否则会同时编译 docs 包）
 RUN go mod download && \
   CGO_ENABLED=0 GOOS=linux go build \
   -a -installsuffix cgo -ldflags="-w -s \
   -X 'main.apiVersion=${apiVersion}' \
-  " -o app ./...
+  " -o app ./src
 
 
 # get alpine container

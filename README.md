@@ -12,7 +12,7 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 - Written in **[Golang](https://golang.org/)**
 - Data is collected from TeslaMate **Postgres** database and local **MQTT** Broker
 - Endpoints return data in JSON format
-- Send commands to your Tesla through the TeslaMateApi
+- **Read-only**：不向 Tesla 账户转发遥控指令，也不代理 TeslaMate 内部日志接口
 
 ### Table of Contents
 
@@ -21,8 +21,6 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
   - [Environment variables](#environment-variables)
 - [API documentation](#api-documentation)
   - [Available endpoints](#available-endpoints)
-  - [Authentication](#authentication)
-  - [Commands](#commands)
 - [Security information](#security-information)
 - [Credits](#credits)
 
@@ -42,7 +40,6 @@ services:
     depends_on:
       - database
     environment:
-      - ENCRYPTION_KEY=MySuperSecretEncryptionKey
       - DATABASE_USER=teslamate
       - DATABASE_PASS=secret
       - DATABASE_NAME=teslamate
@@ -63,7 +60,6 @@ services:
     depends_on:
       - database
     environment:
-      - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
       - DATABASE_NAME=${TM_DB_NAME}
@@ -98,7 +94,6 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **DATABASE_PASS**  | string | _secret_        |
 | **DATABASE_NAME**  | string | _teslamate_     |
 | **DATABASE_HOST**  | string | _database_      |
-| **ENCRYPTION_KEY** | string |                 |
 | **MQTT_HOST**      | string | _mosquitto_     |
 | **TZ**             | string | _Europe/Berlin_ |
 
@@ -106,11 +101,6 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 | Variable                      | Type    | Default                       |
 | ----------------------------- | ------- | ----------------------------- |
-| **TESLAMATE_SSL**             | boolean | _false_                       |
-| **TESLAMATE_HOST**            | string  | _teslamate_                   |
-| **TESLAMATE_PORT**            | string  | _4000_                        |
-| **API_TOKEN**                 | string  |                               |
-| **API_TOKEN_DISABLE**         | string  | _false_                       |
 | **DATABASE_PORT**             | integer | _5432_                        |
 | **DATABASE_TIMEOUT**          | integer | _60000_                       |
 | **DATABASE_SSL**              | string  | _disable_                     |
@@ -123,33 +113,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **MQTT_PASSWORD**             | string  |                               |
 | **MQTT_NAMESPACE**            | string  |                               |
 | **MQTT_CLIENTID**             | string  | _4 char random string_        |
-| **TESLA_API_HOST**            | string  | _retrieved by access token_   |
-
-**Commands** environment variables
-
-| Variable                    | Type    | Default           |
-| --------------------------- | ------- | ----------------- |
-| **ENABLE_COMMANDS**         | boolean | _false_           |
-| **COMMANDS_ALL**            | boolean | _false_           |
-| **COMMANDS_ALLOWLIST**      | string  | _allow_list.json_ |
-| **COMMANDS_LOGGING**        | boolean | _false_           |
-| **COMMANDS_WAKE**           | boolean | _false_           |
-| **COMMANDS_ALERT**          | boolean | _false_           |
-| **COMMANDS_REMOTESTART**    | boolean | _false_           |
-| **COMMANDS_HOMELINK**       | boolean | _false_           |
-| **COMMANDS_SPEEDLIMIT**     | boolean | _false_           |
-| **COMMANDS_VALET**          | boolean | _false_           |
-| **COMMANDS_SENTRYMODE**     | boolean | _false_           |
-| **COMMANDS_DOORS**          | boolean | _false_           |
-| **COMMANDS_TRUNK**          | boolean | _false_           |
-| **COMMANDS_WINDOWS**        | boolean | _false_           |
-| **COMMANDS_SUNROOF**        | boolean | _false_           |
-| **COMMANDS_CHARGING**       | boolean | _false_           |
-| **COMMANDS_CLIMATE**        | boolean | _false_           |
-| **COMMANDS_MEDIA**          | boolean | _false_           |
-| **COMMANDS_SHARING**        | boolean | _false_           |
-| **COMMANDS_SOFTWAREUPDATE** | boolean | _false_           |
-| **COMMANDS_UNKNOWN**        | boolean | _false_           |
+| **TESLA_API_HOST**            | string  | _若设置则启动时写一条 info 日志；无其它逻辑_   |
 
 ## API documentation
 
@@ -171,7 +135,6 @@ swag init -g webserver.go -d src -o src/docs --parseDependency --parseInternal
 | 全局 | `GET /database`、`GET /globalsettings`、`GET /cars` |
 | 单车 | `GET /cars/:CarID`、`battery-health`、`states`、`positions`、`status`、`updates` |
 | 充电 / 行程 | `GET .../charges`（`startDate`/`endDate`）、`.../charges/current`、`.../charges/:ChargeID`；`GET .../drives`（同上 + `minDistance`/`maxDistance`）、`.../drives/:DriveID` |
-| 指令与日志 | `GET .../command`（列出可用指令；旧路径 **`.../commands`** **308** 至此）、`POST .../command/:Command`、`POST .../wake_up`；`GET`/`PUT .../logging`、`PUT .../logging/:Command` |
 | 看板 metrics | `GET .../metrics/<name>`，含 `charging-stats` + `charging-stats/extra`、`drive-stats` + `drive-stats/extra`，以及 `efficiency`、`mileage`、`locations`、`timeline`、`vampire-drain`、`statistics`、`charge-level`、`projected-range`、`overview`、`states-analytics`、`visited`、`dutch-tax`、`trip` |
 
 完整参数与各端点说明以 **Swagger UI**（`/swagger/index.html`）及 **`src/docs/swagger.json`** 为准。
@@ -179,49 +142,11 @@ swag init -g webserver.go -d src -o src/docs --parseDependency --parseInternal
 > [!TIP]
 > Canonical UTC format in RFC3339, e.g. `2006-01-02T15:04:05Z` or `2006-01-02T15:04:05+07:00`
 
-### Authentication
-
-If you want to use command or logging endpoints such as `/api/v1/cars/:CarID/command/:Command`, `/api/v1/cars/:CarID/wake_up`, or `/api/v1/cars/:CarID/logging/:Command` you need to add authentication to your request.
-
-You need to specify a token yourself (called **API_TOKEN**) in the environment variables file, to set it. The token has the requirement to be a minimum of 32 characters long.
-
-There are two options available for authentication to be done.
-
-1. Adding extra header `Authorization: Bearer <token>` to your request. (recommended option)
-
-2. Adding URI parameter `?token=<token>` to the endpoint you try to reach. (not a good option)
-
-\* _Note: If you use the second option and your logs get compromised, your token will be leaked._
-
-### Commands
-
-Commands are not enabled by default.
-
-You need to enable them in your environment variables (with `ENABLE_COMMANDS=true`) and you need to specify which commands you want to use as well.
-
-There are 3 ways of using Commands:
-
-1. Specific groups of commands can be enabled for example `COMMANDS_ALERT=true` will enable the [alert](https://tesla-api.timdorr.com/vehicle/commands/alerts) commands group.
-
-2. If you need a granular set of commands enabled `COMMANDS_ALLOWLIST=/path/to/allow_list.json` can be used to specify a [JSON formatted list of commands](./example/allow_list.json) to enable.
-
-3. The most coarse option `COMMANDS_ALL=true` will enable all commands (specific groups and allow_list will be ignored).
-
-\* _Note: if `COMMANDS_ALL` or any specific group of commands has been enabled `COMMANDS_ALLOWLIST` is ignored._
-
-A list of possible commands can be found under [environment variables](#environment-variables).
-
-Regarding what fields you need to provide in the commands, we will referr to the [timdorr/tesla-api](https://tesla-api.timdorr.com/vehicle/commands) documentation.
-
 ## Security information
 
-There is **no** possibility to get access to your Tesla account tokens by this API and we'll keep it this way!
+本服务为**只读**数据 API：通过 Postgres 与 MQTT 暴露 TeslaMate 已采集的数据，**不**实现车辆遥控、**不**解密或转发 Tesla 账户令牌、**不**调用 Tesla Fleet 指令接口。
 
-The data that is accessible is data like the cars, charges, drives, current status, updates and global settings.
-
-Also, apply some authentication on your webserver in front of the container, so your data is not unprotected and too exposed. In the example above, we use the same .htpasswd file as used by TeslaMate.
-
-If you have applied a level of authentication in front of the container `API_TOKEN_DISABLE=true` will allow commands without requiring the header or uri token value. But even then it's always rekommended to use an apikey.
+请在反向代理或网关层对 `/api` 做访问控制（认证、TLS、限流等）。上文 Traefik 示例使用与 TeslaMate 相同的 Basic Auth，仅为一种常见做法。
 
 ## Credits
 

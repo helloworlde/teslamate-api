@@ -40,12 +40,6 @@ type RespHTTPRoot struct {
 	Path string `json:"path"`
 }
 
-// RespEnabledCommandNames GET /command 或 logging 时返回的可用指令列表。
-type RespEnabledCommandNames struct {
-	// EnabledCommands 当前环境允许执行的指令名
-	EnabledCommands []string `json:"enabled_commands"`
-}
-
 // --- 多接口复用：车辆引用与单位 ---
 
 // APICarRef 响应中标识车辆（car_id + 可选名称）。

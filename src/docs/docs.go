@@ -334,100 +334,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/cars/{CarID}/command": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "commands"
-                ],
-                "summary": "车辆指令 / 唤醒",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "车辆 ID",
-                        "name": "CarID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "POST /command/*、/wake_up：Tesla API 原始 JSON",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/main.RespAPIError"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/main.RespAPIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cars/{CarID}/command/{Command}": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "commands"
-                ],
-                "summary": "车辆指令 / 唤醒",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "车辆 ID",
-                        "name": "CarID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "指令名（POST /command/:Command）",
-                        "name": "Command",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "POST /command/*、/wake_up：Tesla API 原始 JSON",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/main.RespAPIError"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/main.RespAPIError"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/cars/{CarID}/drives": {
             "get": {
                 "produces": [
@@ -526,77 +432,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/main.RespDriveDetail"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cars/{CarID}/logging": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "commands"
-                ],
-                "summary": "TeslaMate 日志控制",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "车辆 ID",
-                        "name": "CarID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "PUT：TeslaMate 日志接口原始 JSON",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cars/{CarID}/logging/{Command}": {
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "commands"
-                ],
-                "summary": "TeslaMate 日志控制",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "车辆 ID",
-                        "name": "CarID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "子命令",
-                        "name": "Command",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "PUT：TeslaMate 日志接口原始 JSON",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
                         }
                     }
                 }
@@ -1589,50 +1424,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/main.RespUpdatesList"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cars/{CarID}/wake_up": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "commands"
-                ],
-                "summary": "车辆指令 / 唤醒",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "车辆 ID",
-                        "name": "CarID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "POST /command/*、/wake_up：Tesla API 原始 JSON",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/main.RespAPIError"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/main.RespAPIError"
                         }
                     }
                 }
@@ -4279,18 +4070,6 @@ const docTemplate = `{
                 },
                 "units": {
                     "$ref": "#/definitions/main.APIUnitsLengthTemp"
-                }
-            }
-        },
-        "main.RespEnabledCommandNames": {
-            "type": "object",
-            "properties": {
-                "enabled_commands": {
-                    "description": "EnabledCommands 当前环境允许执行的指令名",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },

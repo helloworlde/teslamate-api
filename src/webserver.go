@@ -81,11 +81,6 @@ func main() {
 	initDBconnection()
 	defer db.Close()
 
-	// run initAuthToken to validate environment vars
-	initAuthToken()
-	// initialize allowList stored for /command section
-	initCommandAllowList()
-
 	// Connect to the MQTT broker
 	statusCache, err := startMQTT()
 	if getEnvAsBool("DISABLE_MQTT", false) {
@@ -94,10 +89,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
 		}
-	}
-
-	if getEnvAsBool("API_TOKEN_DISABLE", false) {
-		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorization: Bearer token will not be required for commands.")
 	}
 
 	if teslaApiHost := getEnv("TESLA_API_HOST", ""); teslaApiHost != "" {
@@ -174,30 +165,15 @@ func main() {
 			v1.GET("/cars/:CarID/charges/current", TeslaMateAPICarsChargesCurrentV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
 
-			// v1 /api/v1/cars/:CarID/command endpoints（/commands 与 /command 行为相同，仅保留 canonical /command，旧路径 308 重定向）
-			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
-			v1.GET("/cars/:CarID/commands", func(c *gin.Context) {
-				p := strings.Replace(c.Request.URL.Path, "/commands", "/command", 1)
-				c.Redirect(http.StatusPermanentRedirect, p)
-			})
-			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
-
 			// v1 /api/v1/cars/:CarID/drives endpoints
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
-
-			// v1 /api/v1/cars/:CarID/logging endpoints
-			v1.GET("/cars/:CarID/logging", TeslaMateAPICarsLoggingV1)
-			v1.PUT("/cars/:CarID/logging/:Command", TeslaMateAPICarsLoggingV1)
 
 			// v1 /api/v1/cars/:CarID/status endpoints
 			v1.GET("/cars/:CarID/status", statusCache.TeslaMateAPICarsStatusV1)
 
 			// v1 /api/v1/cars/:CarID/updates endpoints
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
-
-			// v1 /api/v1/cars/:CarID/wake_up endpoints
-			v1.POST("/cars/:CarID/wake_up", TeslaMateAPICarsCommandV1)
 
 			// v1 /api/v1/globalsettings endpoints
 			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
