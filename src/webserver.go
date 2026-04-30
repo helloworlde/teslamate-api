@@ -116,12 +116,12 @@ func main() {
 	// disable proxy feature of gin
 	_ = r.SetTrustedProxies(nil)
 
-	r.GET("/", httpRoot)
-
 	// Gin 的 /swagger/*any 不会匹配仅「/swagger」或「/swagger/」，需显式重定向到 index.html
 	r.GET("/swagger", func(c *gin.Context) { c.Redirect(http.StatusFound, "/swagger/index.html") })
 	r.GET("/swagger/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/swagger/index.html") })
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	r.GET("/", httpRoot)
 
 	// TeslaMateApi /api endpoints
 	api := r.Group("/api")
